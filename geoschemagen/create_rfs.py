@@ -1,6 +1,7 @@
+import numpy as np
+import gstools as gs
 
-
-def rf_generator(std_value, mean, aniso_x, aniso_z, angles, seed):
+def rf_generator(std_value: float, mean: float, aniso_x: float, aniso_z: float, angles: float, seed: int):
     """
     Generate random fields using the Gaussian model.
 
@@ -11,7 +12,6 @@ def rf_generator(std_value, mean, aniso_x, aniso_z, angles, seed):
         aniso_z (float): Anisotropy value in Z direction.
         angles (float): Angle of rotation.
         seed (int): Random seed.
-
     Returns:
         gs.SRF: Generated random field model.
     """
@@ -25,13 +25,12 @@ def rf_generator(std_value, mean, aniso_x, aniso_z, angles, seed):
 
 
 
-def generate_rf_group(seed):
+def generate_rf_group(seed: int):
     """
     Generate random field models for different materials.
 
     Args:
         seed (int): Random seed.
-
     Returns:
         list: List of generated random field models.
     """
