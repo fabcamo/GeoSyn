@@ -1,6 +1,6 @@
 import numpy as np
 import gstools as gs
-from soil_types import soil_behaviour_clay, soil_behaviour_siltmix, soil_behaviour_sandmix, soil_behaviour_sand, soil_behaviour_organic
+from geoschemagen.soil_types import soil_behaviour_clay, soil_behaviour_siltmix, soil_behaviour_sandmix, soil_behaviour_sand, soil_behaviour_organic
 
 ndim = 2
 
