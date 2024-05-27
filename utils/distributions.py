@@ -1,3 +1,5 @@
+from random import betavariate
+
 def pert(low, peak, high, *, lamb=10):
     """
     Generate a value using a Beta-Pert distribution.
