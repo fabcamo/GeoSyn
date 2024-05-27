@@ -5,6 +5,12 @@ GeoSchemaGen is a tool designed to generate a synthetic database of geotechnical
 
 For a detailed explanation of the synthetic data generation process, please refer to the work of Campos-Montero et al. (2023).
 
+**Keywords:** Deep learning, machine learning, generative adversarial network, geotechnical engineering, cross-sections, synthetic data, cone penetration test, soil behaviour type.
+
+[!GeoSchemaGen](https://github.com/fabcamo/GeoSchemaGen/blob/main/tests/schemas.png?raw=true)
+
+
+
 ## Installation
 
 To set up your environment to run GeoSchemaGen, please follow these steps:
