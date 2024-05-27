@@ -4,13 +4,20 @@ import numpy as np
 from utils.utils import split_data, save_summary
 from geoschemagen.generate_database import generate_database
 
-# User input for training
+# Output folder
 output_folder = 'D:\\GeoSchemaGen\\tests\\outputs'
+
+# Number of realizations to generate
 no_realizations = 20
-vali_ratio = 0.1
-test_ratio = 0.1
+# Length (x) of the model
 x_max = 512
+# Depth (z) of the model
 z_max = 32
+
+# Percentage of total data for validation
+vali_ratio = 0.1
+# Percentage of total data for testing
+test_ratio = 0.1
 
 # Geometry pre-process
 x_coord = np.arange(0, x_max, 1)
