@@ -7,7 +7,7 @@ For a detailed explanation of the synthetic data generation process, please refe
 
 **Keywords:** Deep learning, machine learning, generative adversarial network, geotechnical engineering, cross-sections, synthetic data, cone penetration test, soil behaviour type.
 
-[!GeoSchemaGen](https://github.com/fabcamo/GeoSchemaGen/blob/main/tests/schemas.png?raw=true)
+![Alt text](https://github.com/fabcamo/GeoSchemaGen/blob/main/tests/schemas.png?raw=true)
 
 
 
