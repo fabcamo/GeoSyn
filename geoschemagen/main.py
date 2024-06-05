@@ -4,6 +4,19 @@ import numpy as np
 from utils.utils import split_data, save_summary
 from geoschemagen.generate_database import generate_database
 
+"""
+MAIN SCRIPT TO GENERATE A GEOTECHNICAL SCHEMATISATION DATABASE
+
+The user needs to input:
+    - output_folder: the folder to save the synthetic data
+    - no_realizations: the number of realizations to generate
+    - x_max: the length of the model
+    - z_max: the depth of the model
+    - vali_ratio: the percentage of total data for validation
+    - test_ratio: the percentage of total data for testing
+
+"""
+
 # Output folder
 output_folder = 'D:\\GeoSchemaGen\\tests\\outputs'
 
@@ -38,7 +51,9 @@ if __name__ == "__main__":
     # Split the data into training and validation at random
     validation_folder = os.path.join(output_folder, "validation")
     test_folder = os.path.join(output_folder, "test")
-    split_data(output_folder, os.path.join(output_folder, "train"), validation_folder, test_folder, vali_ratio, test_ratio)
+    train_folder = os.path.join(output_folder, "train")
+    split_data(data_path=output_folder, train_folder=train_folder, validation_folder=validation_folder,
+               test_folder=test_folder, vali_ratio=vali_ratio, test_ratio=test_ratio)
 
     # End the timer
     time_end = time.time()

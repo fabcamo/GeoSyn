@@ -35,9 +35,9 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
 
     # Calculate the number of files for each set
     nb_files = len(files)
-    nb_train = int(nb_files * vali_ratio)
+    nb_vali = int(nb_files * vali_ratio)
     nb_test = int(nb_files * test_ratio)
-    nb_validation = nb_files - (nb_train + nb_test)
+    nb_train = nb_files - (nb_vali + nb_test)
 
     # Shuffle the indexes
     indexes = np.arange(nb_files)
@@ -46,8 +46,8 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
 
     # Select indexes for train, validation, and test sets
     indexes_train = indexes[:nb_train]
-    indexes_validation = indexes[nb_train:nb_train + nb_validation]
-    indexes_test = indexes[nb_train + nb_validation:]
+    indexes_validation = indexes[nb_train:nb_train + nb_vali]
+    indexes_test = indexes[nb_train + nb_vali:]
 
     # Copy files to respective folders
     for i in indexes_train:
