@@ -60,7 +60,7 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
         ax.set_position([0, 0, 1, 1])
         ax.imshow(data_m)
         plt.axis("off")
-        filename = f"cs_{counter + 1}_cptlike"
+        filename = f"cptlike_{counter + 1}"
         fig_path = os.path.join(cptlike_folder, f"{filename}.png")
         csv_path = os.path.join(cptlike_folder, f"{filename}.csv")
         plt.savefig(fig_path)

@@ -30,11 +30,10 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         os.makedirs(test_folder)
 
     # Get list of CSV files in data_path
-    files = os.listdir(data_path)
-    files = [f for f in files if f.endswith(".csv")]
+    csv_files = [f for f in os.listdir(data_path) if f.endswith(".csv")]
 
     # Calculate the number of files for each set
-    nb_files = len(files)
+    nb_files = len(csv_files)
     nb_vali = int(nb_files * vali_ratio)
     nb_test = int(nb_files * test_ratio)
     nb_train = nb_files - (nb_vali + nb_test)
@@ -51,19 +50,64 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
 
     # Copy files to respective folders
     for i in indexes_train:
-        shutil.copy(os.path.join(data_path, files[i]), os.path.join(train_folder, files[i]))
+        csv_file = csv_files[i]
+        png_file = csv_file.replace(".csv", ".png")
+        shutil.copy(os.path.join(data_path, csv_file), os.path.join(train_folder, csv_file))
+        shutil.copy(os.path.join(data_path, png_file), os.path.join(train_folder, png_file))
 
     for i in indexes_validation:
-        shutil.copy(os.path.join(data_path, files[i]), os.path.join(validation_folder, files[i]))
+        csv_file = csv_files[i]
+        png_file = csv_file.replace(".csv", ".png")
+        shutil.copy(os.path.join(data_path, csv_file), os.path.join(validation_folder, csv_file))
+        shutil.copy(os.path.join(data_path, png_file), os.path.join(validation_folder, png_file))
 
     for i in indexes_test:
-        shutil.copy(os.path.join(data_path, files[i]), os.path.join(test_folder, files[i]))
+        csv_file = csv_files[i]
+        png_file = csv_file.replace(".csv", ".png")
+        shutil.copy(os.path.join(data_path, csv_file), os.path.join(test_folder, csv_file))
+        shutil.copy(os.path.join(data_path, png_file), os.path.join(test_folder, png_file))
 
-    # Delete files from the original folder
-    for file_name in files:
-        if file_name.endswith('.csv'):
-            file_path = os.path.join(data_path, file_name)
-            os.remove(file_path)
+    # Delete the csv and png files from the original folder
+    for file_name in csv_files:
+        file_path = os.path.join(data_path, file_name)
+        os.remove(file_path)
+        png_file = file_name.replace(".csv", ".png")
+        file_path = os.path.join(data_path, png_file)
+        os.remove(file_path)
+
+    # Move matching files from cptlike folder to test folder
+    # Define the cptlike and test folders
+    source_folder = test_folder
+    destination_folder = os.path.join(data_path, "cptlike_images")
+    move_matching_files(source_folder, destination_folder)
+    # Move matching files from cptlike folder to validation folder
+    source_folder = validation_folder
+    move_matching_files(source_folder, destination_folder)
+    # Move matching files from cptlike folder to train folder
+    source_folder = train_folder
+    move_matching_files(source_folder, destination_folder)
+
+
+
+def move_matching_files(source_folder, destination_folder):
+    # Extract file numbers from source folder
+    file_numbers = []
+    for filename in os.listdir(source_folder):
+        if filename.endswith("."):
+            continue
+        file_number = filename.split("_")[-1].split(".")[0]
+        file_numbers.append(file_number)
+
+    # Move matching files from destination folder to source folder
+    for filename in os.listdir(destination_folder):
+        if filename.endswith("."):
+            continue
+        file_number = filename.split("_")[-1].split(".")[0]
+        if file_number in file_numbers:
+            source_file_path = os.path.join(destination_folder, filename)
+            destination_file_path = os.path.join(source_folder, filename)
+            shutil.move(source_file_path, destination_file_path)
+
 
 
 def save_summary(output_folder: str, time_start: float, time_end: float, seed: int, no_realizations: int):
