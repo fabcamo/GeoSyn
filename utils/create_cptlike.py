@@ -5,7 +5,7 @@ import os
 import re
 
 
-def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max: int, z_max: int, output_folder: str):
+def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max: int, z_max: int, cptlike_folder: str):
     """
     Apply a given missing rate to each image in the list of dataframes. The missing rate is applied to the 'IC' column
     of the input dataframes. The missing data is stored in a separate list and the full data is stored in another list.
@@ -16,7 +16,7 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
         min_distance (int): The minimum distance between missing data points.
         x_max (int): The maximum value of the x-axis.
         z_max (int): The maximum value of the z-axis.
-        output_folder (str): The folder to save the synthetic data.
+        cptlike_folder (str): The folder to save the CPT-like images.
 
     Returns:
         missing_data (list): List of numpy arrays containing the missing data.
@@ -50,6 +50,10 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
         df = pd.DataFrame(data_m)
         df = reshape_dataframe(df)
 
+        # Create the output folder if it does not exist
+        if not os.path.isdir(cptlike_folder):
+            os.makedirs(cptlike_folder)
+
         # Plot and save the results
         plt.clf()
         fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
@@ -57,8 +61,8 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
         ax.imshow(data_m)
         plt.axis("off")
         filename = f"cs_{counter + 1}_cptlike"
-        fig_path = os.path.join(output_folder, f"{filename}.png")
-        csv_path = os.path.join(output_folder, f"{filename}.csv")
+        fig_path = os.path.join(cptlike_folder, f"{filename}.png")
+        csv_path = os.path.join(cptlike_folder, f"{filename}.csv")
         plt.savefig(fig_path)
         df.to_csv(csv_path)
         plt.close()
@@ -261,6 +265,8 @@ def from_schema_to_cptlike(path_to_images: str, miss_rate: float, min_distance: 
         cptlike_img (np.array): The incomplete data (cpt like image) reshaped for image processing.
     """
 
+    cptlike_folder = os.path.join(path_to_images, "cptlike_images")
+
     # Load all CSV files from the specified directory
     all_csv = read_all_csv_files(path_to_images)
     # Apply a missing rate to create simulated incomplete data
@@ -269,7 +275,7 @@ def from_schema_to_cptlike(path_to_images: str, miss_rate: float, min_distance: 
                                           min_distance=min_distance,
                                           x_max=no_rows,
                                           z_max=no_cols,
-                                          output_folder=path_to_images)
+                                          cptlike_folder=cptlike_folder)
 
     # Get the number of samples (i.e., CSV files)
     no_samples = len(all_csv)
