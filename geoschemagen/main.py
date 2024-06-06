@@ -3,6 +3,7 @@ import time
 import numpy as np
 from utils.utils import split_data, save_summary
 from geoschemagen.generate_database import generate_database
+from utils.create_cptlike import from_schema_to_cptlike
 
 """
 MAIN SCRIPT TO GENERATE A GEOTECHNICAL SCHEMATISATION DATABASE
@@ -21,7 +22,7 @@ The user needs to input:
 output_folder = 'D:\\GeoSchemaGen\\tests\\outputs'
 
 # Number of realizations to generate
-no_realizations = 20
+no_realizations = 5
 # Length (x) of the model
 x_max = 512
 # Depth (z) of the model
@@ -46,7 +47,15 @@ if __name__ == "__main__":
     seed = np.random.randint(20220412, 20230412)
 
     # Call the generate_database function to create images
-    generate_database(output_folder, no_realizations, z_max, x_max, seed)
+    generate_database(output_folder=output_folder, no_realizations=no_realizations, z_max=z_max, x_max=x_max, seed=seed)
+
+    # Call the function to generate the cpt like images
+    cpt_like_image = from_schema_to_cptlike(path_to_images=output_folder,
+                                            miss_rate=0.99,
+                                            min_distance=51,
+                                            no_cols=z_max,
+                                            no_rows=x_max)
+
 
     # Split the data into training and validation at random
     validation_folder = os.path.join(output_folder, "validation")

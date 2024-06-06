@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import os
+import re
 
 
-def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int):
+def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max: int, z_max: int, output_folder: str):
     """
     Apply a given missing rate to each image in the list of dataframes. The missing rate is applied to the 'IC' column
     of the input dataframes. The missing data is stored in a separate list and the full data is stored in another list.
@@ -12,14 +14,16 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int):
         dfs (list): List of pandas dataframes containing the data.
         miss_rate (float): The missing rate to apply to the data.
         min_distance (int): The minimum distance between missing data points.
+        x_max (int): The maximum value of the x-axis.
+        z_max (int): The maximum value of the z-axis.
+        output_folder (str): The folder to save the synthetic data.
 
     Returns:
         missing_data (list): List of numpy arrays containing the missing data.
-        full_data (list): List of numpy arrays containing the full data.
     """
 
     # Initialize two lists to store missing and full data
-    missing_data, full_data = [], []
+    missing_data = []
     # Define the column name of interest
     value_name = 'IC'
 
@@ -42,12 +46,39 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int):
         data_m = remove_random_columns(data_z, miss_rate, min_distance)
         # Append the missing and full data arrays to their respective lists
         missing_data.append(data_m)
-        full_data.append(data_z)
+        # Create a dataframe to store the missing data
+        df = pd.DataFrame(data_m)
+        df = reshape_dataframe(df)
 
-        print('schematization to CPT-like no.', counter, ' done')
+        # Plot and save the results
+        plt.clf()
+        fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
+        ax.set_position([0, 0, 1, 1])
+        ax.imshow(data_m)
+        plt.axis("off")
+        filename = f"cs_{counter + 1}_cptlike"
+        fig_path = os.path.join(output_folder, f"{filename}.png")
+        csv_path = os.path.join(output_folder, f"{filename}.csv")
+        plt.savefig(fig_path)
+        df.to_csv(csv_path)
+        plt.close()
+
+
+        print('schematization to CPT-like no.', counter+1, ' done')
 
     # Return the lists of missing and full data arrays
-    return missing_data, full_data
+    return missing_data
+
+
+# Assuming df is your DataFrame
+def reshape_dataframe(df):
+    # Stack the DataFrame to convert the column indices (x) into rows
+    stacked_df = df.stack().reset_index()
+    # Rename the columns
+    stacked_df.columns = ['z', 'x', 'IC']
+    # Reorder the columns
+    reshaped_df = stacked_df[['x', 'z', 'IC']]
+    return reshaped_df
 
 
 def remove_random_columns(data_z, miss_rate: float, min_distance: int):
@@ -163,40 +194,11 @@ def remove_random_depths(data_z, data_m):
     return data_m
 
 
-def load_remove_reshape_data(path_to_images: str, miss_rate: float, min_distance: int, no_rows: int, no_cols: int):
+def natural_sort_key(s):
     """
-    Load CSV data, remove some of it to simulate incomplete data, then reshape it for further processing.
-
-    Args:
-        path_to_images (str): The path to the directory containing the CSV files.
-        miss_rate (float): The rate at which to remove columns.
-        min_distance (int): The minimum distance between missing data points.
-        no_rows (int): The number of rows in the reshaped data.
-        no_cols (int): The number of columns in the reshaped data.
-
-    Returns:
-        original_img (np.array): The full data reshaped for image processing.
-        cptlike_img (np.array): The incomplete data (cpt like image) reshaped for image processing.
+    Sort function for natural sorting, handling numerical values in strings.
     """
-
-    # Load all CSV files from the specified directory
-    all_csv = read_all_csv_files(path_to_images)
-    # Apply a missing rate to create simulated incomplete data
-    missing_data, full_data = apply_miss_rate_per_rf(all_csv, miss_rate, min_distance)
-
-    # Get the number of samples (i.e., CSV files)
-    no_samples = len(all_csv)
-
-    # Reshape the missing and full data into the specified number of rows and columns
-    # Note that we convert the data type to float32 to ensure compatibility with certain operations downstream
-    missing_data = np.array([np.reshape(i, (no_rows, no_cols)).astype(np.float32) for i in missing_data])
-    full_data = np.array([np.reshape(i, (no_rows, no_cols)).astype(np.float32) for i in full_data])
-
-    # Further reshape the data to include a color channel (of size 1) for compatibility with image processing operations
-    original_img = np.reshape(full_data, (no_samples, no_rows, no_cols, 1))
-    cptlike_img = np.reshape(missing_data, (no_samples, no_rows, no_cols, 1))
-
-    return original_img, cptlike_img
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
 
 
 def read_all_csv_files(directory: str):
@@ -215,20 +217,63 @@ def read_all_csv_files(directory: str):
     print('Reading all the data')
 
     # Ensure that the directory path is compatible with the operating system
-    directory = os.path.join(directory)
+    directory = os.path.abspath(directory)
     # Initialize an empty list to store the dataframes of data read from each .csv file
     csv_data = []
 
-    # Use os.walk() to iterate through all files in the directory, including those in subdirectories
+    # Collect all csv file names
+    csv_files = []
     for root, dirs, files in os.walk(directory):
-        # Iterate through the list of files in the current directory
         for file in files:
-            # Check if the current file is a .csv file
             if file.endswith(".csv"):
-                # Read the .csv file into a pandas dataframe
-                df = pd.read_csv(os.path.join(directory, file), delimiter=',')
-                # Append the dataframe to the list of dataframes
-                csv_data.append(df)
+                csv_files.append(file)
+
+    # Sort the file names in natural order
+    csv_files.sort(key=natural_sort_key)
+
+    # Read each sorted csv file into a dataframe and append it to the list
+    for file in csv_files:
+        df = pd.read_csv(os.path.join(directory, file), delimiter=',')
+        csv_data.append(df)
 
     # Return the list of dataframes
     return csv_data
+
+
+def from_schema_to_cptlike(path_to_images: str, miss_rate: float, min_distance: int, no_rows: int, no_cols: int):
+    """
+    Load CSV data, remove some of it to simulate incomplete data, then reshape it for further processing.
+
+    Args:
+        path_to_images (str): The path to the directory containing the CSV files.
+        miss_rate (float): The rate at which to remove columns.
+        min_distance (int): The minimum distance between missing data points.
+        no_rows (int): The number of rows in the reshaped data.
+        no_cols (int): The number of columns in the reshaped data.
+
+    Returns:
+        original_img (np.array): The full data reshaped for image processing.
+        cptlike_img (np.array): The incomplete data (cpt like image) reshaped for image processing.
+    """
+
+    # Load all CSV files from the specified directory
+    all_csv = read_all_csv_files(path_to_images)
+    # Apply a missing rate to create simulated incomplete data
+    missing_data = apply_miss_rate_per_rf(dfs=all_csv,
+                                          miss_rate=miss_rate,
+                                          min_distance=min_distance,
+                                          x_max=no_rows,
+                                          z_max=no_cols,
+                                          output_folder=path_to_images)
+
+    # Get the number of samples (i.e., CSV files)
+    no_samples = len(all_csv)
+
+    # Reshape the missing and full data into the specified number of rows and columns
+    # Note that we convert the data type to float32 to ensure compatibility with certain operations downstream
+    missing_data = np.array([np.reshape(i, (no_rows, no_cols)).astype(np.float32) for i in missing_data])
+
+    # Further reshape the data to include a color channel (of size 1) for compatibility with image processing operations
+    cptlike_img = np.reshape(missing_data, (no_samples, no_rows, no_cols, 1))
+
+    return cptlike_img
