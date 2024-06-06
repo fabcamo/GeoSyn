@@ -70,15 +70,20 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
     return missing_data
 
 
-# Assuming df is your DataFrame
 def reshape_dataframe(df):
-    # Stack the DataFrame to convert the column indices (x) into rows
-    stacked_df = df.stack().reset_index()
-    # Rename the columns
-    stacked_df.columns = ['z', 'x', 'IC']
-    # Reorder the columns
-    reshaped_df = stacked_df[['x', 'z', 'IC']]
+    # Initialize an empty list to store reshaped data
+    reshaped_data = []
+    # Iterate over each x position
+    for x, x_data in enumerate(df.columns):
+        # Iterate over each z position for the current x
+        for z, value in enumerate(df[x_data]):
+            # Append the reshaped data to the list
+            reshaped_data.append([x, z, value])
+    # Create a DataFrame from the reshaped data
+    reshaped_df = pd.DataFrame(reshaped_data, columns=['x', 'z', 'IC'])
     return reshaped_df
+
+
 
 
 def remove_random_columns(data_z, miss_rate: float, min_distance: int):
