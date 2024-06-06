@@ -87,6 +87,9 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
     source_folder = train_folder
     move_matching_files(source_folder, destination_folder)
 
+    # Delete the cptlike folder
+    shutil.rmtree(destination_folder)
+
 
 
 def move_matching_files(source_folder, destination_folder):
