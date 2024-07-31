@@ -22,7 +22,7 @@ The user needs to input:
 output_folder = 'D:\\GeoSchemaGen\\tests\\outputs'
 
 # Number of realizations to generate
-no_realizations = 100
+no_realizations = 10
 # Length (x) of the model
 x_max = 512
 # Depth (z) of the model
