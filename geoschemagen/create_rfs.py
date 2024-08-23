@@ -63,6 +63,6 @@ def generate_rf_group(seed: int):
     srf_sand2 = rf_generator(std_value, mean, aniso_x, aniso_z, angles, seed + 7)
 
     # Store the random field models inside layers
-    layers = [srf_clay, srf_siltmix, srf_sandmix, srf_sand, srf_organic, srf_clay2, srf_sand2]
+    layers = [srf_clay, srf_siltmix, srf_sandmix, srf_sand, srf_organic, srf_clay2, srf_sand2, srf_siltmix, srf_clay]
 
     return layers

@@ -19,10 +19,14 @@ The user needs to input:
 """
 
 # Output folder
-output_folder = 'D:\\GeoSchemaGen\\tests\\outputs'
+output_folder = 'D:\\GeoSchemaGen\\tests\\noRF5'
+# if the folder does not exist, create it
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
 
 # Number of realizations to generate
-no_realizations = 10
+no_realizations = 1000
 # Length (x) of the model
 x_max = 512
 # Depth (z) of the model
@@ -47,7 +51,12 @@ if __name__ == "__main__":
     seed = np.random.randint(20220412, 20230412)
 
     # Call the generate_database function to create images
-    generate_database(output_folder=output_folder, no_realizations=no_realizations, z_max=z_max, x_max=x_max, seed=seed)
+    generate_database(output_folder=output_folder,
+                      no_realizations=no_realizations,
+                      z_max=z_max, x_max=x_max,
+                      seed=seed,
+                      no_layers=5,
+                      use_RF=False)
 
     # Call the function to generate the cpt like images
     cpt_like_image = from_schema_to_cptlike(path_to_images=output_folder,
@@ -69,3 +78,6 @@ if __name__ == "__main__":
 
     # Save a summary of the run times and seed
     save_summary(output_folder, time_start, time_end, seed, no_realizations)
+
+
+
