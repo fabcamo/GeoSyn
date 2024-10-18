@@ -19,14 +19,14 @@ The user needs to input:
 """
 
 # Output folder
-output_folder = 'D:\\GeoSchemaGen\\tests\\noRF5'
+output_folder = r'N:\My Documents\unix\schgan\datah7'
 # if the folder does not exist, create it
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
 
 # Number of realizations to generate
-no_realizations = 1000
+no_realizations = 50000
 # Length (x) of the model
 x_max = 512
 # Depth (z) of the model
@@ -50,18 +50,19 @@ if __name__ == "__main__":
     # Generate seed
     seed = np.random.randint(20220412, 20230412)
 
+
     # Call the generate_database function to create images
     generate_database(output_folder=output_folder,
                       no_realizations=no_realizations,
                       z_max=z_max, x_max=x_max,
                       seed=seed,
                       no_layers=5,
-                      use_RF=False)
+                      use_RF=True)
 
     # Call the function to generate the cpt like images
     cpt_like_image = from_schema_to_cptlike(path_to_images=output_folder,
                                             miss_rate=0.99,
-                                            min_distance=51,
+                                            min_distance=50,
                                             no_cols=z_max,
                                             no_rows=x_max)
 

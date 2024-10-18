@@ -77,9 +77,9 @@ def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed
     ax.imshow(df_pivot)
     plt.axis("off")
     filename = f"cs_{counter+1}"
-    fig_path = os.path.join(output_folder, f"{filename}.png")
+    #fig_path = os.path.join(output_folder, f"{filename}.png")
     csv_path = os.path.join(output_folder, f"{filename}.csv")
-    plt.savefig(fig_path)
+    #plt.savefig(fig_path)
     df.to_csv(csv_path)
     plt.close()
 
