@@ -8,7 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 # define the path to the csv file
-cs_file = Path(r"C:/Users/camposmo/OneDrive - Stichting Deltares/Documents/Projects/schemaGAN/forRoeland/simple/cs_830.csv")
+cs_file = Path(r"D:\GeoSchemaGen\tests\multi\cs_13.csv")
 
 # read the data from the csv file
 cs_data = pd.read_csv(cs_file)

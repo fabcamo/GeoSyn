@@ -64,7 +64,7 @@ def apply_miss_rate_per_rf(dfs: list, miss_rate: float, min_distance: int, x_max
         fig_path = os.path.join(cptlike_folder, f"{filename}.png")
         csv_path = os.path.join(cptlike_folder, f"{filename}.csv")
         plt.savefig(fig_path)
-        df.to_csv(csv_path)
+        #df.to_csv(csv_path)
         plt.close()
 
 

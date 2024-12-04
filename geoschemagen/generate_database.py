@@ -1,8 +1,16 @@
 import numpy as np
-from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, create_schema_eight_layers_noRF
+from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
+    create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD
 
 
-def generate_database(output_folder: str, no_realizations: int, z_max: int, x_max: int, seed:int, no_layers:int = 5, use_RF:bool = True):
+def generate_database(output_folder: str,
+                      no_realizations: int,
+                      z_max: int,
+                      x_max: int,
+                      seed:int,
+                      model_type:str,
+                      no_layers:int = 5,
+                      use_RF:bool = True):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
 
@@ -12,6 +20,7 @@ def generate_database(output_folder: str, no_realizations: int, z_max: int, x_ma
         z_max (int): The depth of the model.
         x_max (int): The length of the model.
         seed (int): The seed for the random number generator.
+        model_type (str): The type of subsoil model to generate.
         no_layers (int): The number of layers in the model. Default is 5.
         use_RF (bool): Whether to use Random Fields. Default is True.
 
@@ -38,10 +47,20 @@ def generate_database(output_folder: str, no_realizations: int, z_max: int, x_ma
                     print("Number of layers not supported")
 
             elif use_RF == False:
-                if no_layers == 5:
-                    create_schema_noRF(output_folder, counter, z_max, x_max, seed)
-                elif no_layers == 8:
-                    create_schema_eight_layers_noRF(output_folder, counter, z_max, x_max, seed)
+                if model_type == "A":
+                    # Just sine (1) or just cosine (2) per model
+                    choice = np.random.choice([1, 2])
+                    create_schema_typeA(output_folder, counter, z_max, x_max, choice, seed)
+                elif model_type == "B":
+                    # Mix of both sine and cosine in the same model
+                    choice = 0
+                    create_schema_typeB(output_folder, counter, z_max, x_max, choice, seed)
+                elif model_type == "C":
+                    choice = 0
+                    create_schema_typeC(output_folder, counter, z_max, x_max, choice, seed)
+                elif model_type == "D":
+                    choice = 0
+                    create_schema_typeD(output_folder, counter, z_max, x_max, choice, seed)
                 else:
                     print("Number of layers not supported")
             # Increment the counter
