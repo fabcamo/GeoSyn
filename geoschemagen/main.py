@@ -19,7 +19,7 @@ The user needs to input:
 """
 
 # Output folder
-output_folder = r'D:\GeoSchemaGen\tests\typeE'
+output_folder = r'D:\GeoSchemaGen\tests\typeF'
 # if the folder does not exist, create it
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -42,7 +42,7 @@ z_max = 32
     - "D": Horizontal layers with intercalations sand and clay, up to 7 layers, fixed bottom not always present.
     - "E": Inclined layers
 """
-model_type = "E"
+model_type = "F"
 
 # Percentage of total data for validation
 vali_ratio = 0
