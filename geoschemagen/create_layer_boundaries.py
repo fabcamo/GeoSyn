@@ -63,7 +63,6 @@ def layer_boundary_irregular(x_coord: np.array, z_max:float):
     return y
 
 
-
 def layer_boundary_horizA(x_coord: np.array, z_max:float, trigo_type: int):
     """
     Generate a sine or cosine line as a layer boundary. This means parameters focus on a horizontal
@@ -254,3 +253,42 @@ def layer_boundary_subhorizD_vert(x_coord: np.array, z_max:float, trigo_type: in
     y = amplitude * func(2 * np.pi * (x_coord - phase_shift) / period) + vertical_shift
 
     return y
+
+
+def layer_boundary_irregularE(x_coord: np.array, z_max:float, trigo_type: int):
+    """
+    Generate a sine or cosine line as a layer boundary. This means parameters focus on a horizontal
+    layer boundary. This means very high period and low amplitude.
+
+    Args:
+        x_coord (array-like): X coordinates.
+        z_max (float): Maximum depth.
+
+    Returns:
+        array-like: Y coordinates of the layer boundary.
+    """
+
+    # Get the length of the x coordinates
+    x_max = len(x_coord)
+
+    # Generate amplitude using the pert function with specified range
+    amplitude = np.random.triangular(0, 25, 40)
+    # Generate period using the pert function with specified range
+    period = np.random.triangular(2000, 3000, 5000)
+    # Randomly shift the phase of the wave
+    phase_shift = np.random.uniform(low=100, high=1000)
+    # Randomly shift the entire wave vertically
+    vertical_shift = np.random.uniform(low=0, high=30)
+
+    if trigo_type == 1: # Use sin
+        func = np.sin
+    elif trigo_type == 2: # Use cos
+        func = np.cos
+    else: # Use sin or cosine at random
+        func = np.random.choice([np.sin, np.cos])
+
+    # Generate the y-coordinates using the chosen function and parameters
+    y = amplitude * func(2 * np.pi * (x_coord - phase_shift) / period) + vertical_shift
+
+    return y
+

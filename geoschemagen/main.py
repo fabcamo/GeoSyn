@@ -19,7 +19,7 @@ The user needs to input:
 """
 
 # Output folder
-output_folder = r'D:\GeoSchemaGen\tests\typeD'
+output_folder = r'D:\GeoSchemaGen\tests\typeE'
 # if the folder does not exist, create it
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -40,8 +40,9 @@ z_max = 32
     - "B": Very horizontal, up to 6 layers, indentations possible, fixed bottom.
     - "C": Horizontal layers with lenses at different positions, up to 4 layers, fixed bottom.
     - "D": Horizontal layers with intercalations sand and clay, up to 7 layers, fixed bottom not always present.
+    - "E": Inclined layers
 """
-model_type = "D"
+model_type = "E"
 
 # Percentage of total data for validation
 vali_ratio = 0

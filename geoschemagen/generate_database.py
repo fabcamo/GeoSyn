@@ -1,6 +1,6 @@
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
-    create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD
+    create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, create_schema_typeE
 
 
 def generate_database(output_folder: str,
@@ -61,6 +61,9 @@ def generate_database(output_folder: str,
                 elif model_type == "D":
                     choice = 0
                     create_schema_typeD(output_folder, counter, z_max, x_max, choice, seed)
+                elif model_type == "E":
+                    choice = np.random.choice([1, 2])
+                    create_schema_typeE(output_folder, counter, z_max, x_max, choice, seed)
                 else:
                     print("Number of layers not supported")
             # Increment the counter
