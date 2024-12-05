@@ -271,21 +271,31 @@ def layer_boundary_irregularE(x_coord: np.array, z_max:float, trigo_type: int):
     # Get the length of the x coordinates
     x_max = len(x_coord)
 
-    # Generate amplitude using the pert function with specified range
-    amplitude = np.random.triangular(0, 25, 40)
-    # Generate period using the pert function with specified range
-    period = np.random.triangular(2000, 3000, 5000)
-    # Randomly shift the phase of the wave
-    phase_shift = np.random.uniform(low=100, high=1000)
-    # Randomly shift the entire wave vertically
-    vertical_shift = np.random.uniform(low=0, high=30)
+    #trigo_type = 1
 
     if trigo_type == 1: # Use sin
         func = np.sin
+        amplitude = np.random.triangular(35, 70, 100)
+        phase_shift = np.random.uniform(low=-1500, high=-1000)
+        vertical_shift = np.random.uniform(low=-28, high=0)
     elif trigo_type == 2: # Use cos
         func = np.cos
+        amplitude = np.random.triangular(20, 40, 50)
+        phase_shift = np.random.uniform(low=1000, high=1500)
+        vertical_shift = np.random.uniform(low=0, high=28)
     else: # Use sin or cosine at random
         func = np.random.choice([np.sin, np.cos])
+
+    # Generate amplitude using the pert function with specified range
+    #amplitude = np.random.triangular(15, 30, 60)
+    # Generate period using the pert function with specified range
+    period = np.random.triangular(2000, 3500, 5000)
+    # Randomly shift the phase of the wave
+    #phase_shift = np.random.uniform(low=500, high=3000)
+    # Randomly shift the entire wave vertically
+    #vertical_shift = np.random.uniform(low=0, high=28)
+
+
 
     # Generate the y-coordinates using the chosen function and parameters
     y = amplitude * func(2 * np.pi * (x_coord - phase_shift) / period) + vertical_shift

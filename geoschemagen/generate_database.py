@@ -49,21 +49,21 @@ def generate_database(output_folder: str,
             elif use_RF == False:
                 if model_type == "A":
                     # Just sine (1) or just cosine (2) per model
-                    choice = np.random.choice([1, 2])
-                    create_schema_typeA(output_folder, counter, z_max, x_max, choice, seed)
+                    combine_trigo = np.random.choice([1, 2])
+                    create_schema_typeA(output_folder, counter, z_max, x_max, combine_trigo, seed)
                 elif model_type == "B":
                     # Mix of both sine and cosine in the same model
-                    choice = 0
-                    create_schema_typeB(output_folder, counter, z_max, x_max, choice, seed)
+                    combine_trigo = 0
+                    create_schema_typeB(output_folder, counter, z_max, x_max, combine_trigo, seed)
                 elif model_type == "C":
-                    choice = 0
-                    create_schema_typeC(output_folder, counter, z_max, x_max, choice, seed)
+                    combine_trigo = 0
+                    create_schema_typeC(output_folder, counter, z_max, x_max, combine_trigo, seed)
                 elif model_type == "D":
-                    choice = 0
-                    create_schema_typeD(output_folder, counter, z_max, x_max, choice, seed)
+                    combine_trigo = 0
+                    create_schema_typeD(output_folder, counter, z_max, x_max, combine_trigo, seed)
                 elif model_type == "E":
-                    choice = np.random.choice([1, 2])
-                    create_schema_typeE(output_folder, counter, z_max, x_max, choice, seed)
+                    combine_trigo = False
+                    create_schema_typeE(output_folder, counter, z_max, x_max, combine_trigo, seed)
                 else:
                     print("Number of layers not supported")
             # Increment the counter

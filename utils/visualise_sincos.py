@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Function parameters
-amplitude = 10            # Amplitude (A)
-period = 500              # User-defined period (T)
+amplitude = 50            # Amplitude (A)
+period = 3500              # User-defined period (T)
 horizontal_shift = 0     # Horizontal phase shift (h)
-vertical_shift = 0       # Vertical shift (v)
-function_type = "cos"    # Choose between "sin" or "cos"
+vertical_shift = -20       # Vertical shift (v)
+function_type = "sin"    # Choose between "sin" or "cos"
 
 # Calculate frequency from period
 frequency = 2 * np.pi / period

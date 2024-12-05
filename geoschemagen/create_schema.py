@@ -599,11 +599,11 @@ def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_horizB(x_coord, z_max, trigo_type)
-    y2 = layer_boundary_horizB(x_coord, z_max, trigo_type)
-    y3 = layer_boundary_subhorizB(x_coord, z_max, trigo_type)
-    y4 = layer_boundary_subhorizB(x_coord, z_max, trigo_type)
-    y5 = layer_boundary_subhorizB(x_coord, z_max, trigo_type)
+    y1 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 0, 3)
+    y2 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 4, 6)
+    y3 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 9, 11)
+    y4 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 14, 15)
+    y5 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 17, 21)
     boundaries = [y1, y2, y3, y4, y5]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -629,16 +629,17 @@ def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int
 
     # Apply the random field models to the layers
     all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
+
+    # Choose random value from 2, 3, 4, 5 with equal probability
+    random_value = np.random.choice([4, 1])
+    # Get the i-layer value from an user defined list
+    user_layer_values = [random_value, 1, random_value, 3, 2, 5]
+
     for i, lst in enumerate(all_layers):
         # Create a mask to select the grid cells for each layer
         mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
         layer_coordinates = coords_to_list[mask]
 
-        # COMPLETELY FIX ORDER: Apply the fixed value to each layer always
-        # Choose random value from 2, 3, 4, 5 with equal probability
-        random_value = np.random.choice([4, 1])
-        # Get the i-layer value from an user defined list
-        user_layer_values = [random_value, 1, 4, 3, 2, 5]
         # Apply the user defined values to the mask
         values[mask] = user_layer_values[i]
 
@@ -841,7 +842,7 @@ def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int
 
 
 
-def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int = 20220412):
+def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int, combine_trigo: bool, seed: int = 20220412):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -855,6 +856,7 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
         counter (int): Current realization number.
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
+        combine_trigo (bool): Type of trigonometric function to use.
         seed (int): Seed for random number generation.
     Returns:
         None
@@ -869,6 +871,12 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
     matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
+
+    # Check if combine_trigo is True, if it is, choose at random between sine and cosine, else, stick with one for all layers
+    if combine_trigo == True:
+        trigo_type = 0
+    else:
+        trigo_type = np.random.choice([1, 2])
 
     # Generate new y value for each plot and sort them to avoid stacking
     y1 = layer_boundary_irregularE(x_coord, z_max, trigo_type)
@@ -900,9 +908,9 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
     all_layers = [area_1, area_2, area_3, area_4, area_5]
 
     # Choose random value from 2, 3, 4, 5 with equal probability
-    random_value = np.random.choice([2, 3])
+    random_value = np.random.choice([2, 4])
     # Get the i-layer value from an user defined list
-    user_layer_values = [5, 4, 3, random_value, 1]
+    user_layer_values = [5, random_value, 3, random_value, 1]
 
     for i, lst in enumerate(all_layers):
         # Create a mask to select the grid cells for each layer
