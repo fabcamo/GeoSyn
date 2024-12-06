@@ -17,7 +17,7 @@ The user needs to input:
     - test_ratio: the percentage of total data for testing
 
 """
-
+# test test
 # Output folder
 output_folder = r'D:\GeoSchemaGen\tests\typeF'
 # if the folder does not exist, create it
