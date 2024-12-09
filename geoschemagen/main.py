@@ -29,7 +29,7 @@ The user needs to input:
 """
 
 # Choose the model type
-model_type = "F"
+model_type = "A"
 # Number of realizations to generate
 no_realizations = 100
 # Length (x) of the model

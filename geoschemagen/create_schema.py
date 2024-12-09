@@ -1,4 +1,6 @@
 import os
+import h5py
+import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -483,7 +485,7 @@ def create_schema_eight_layers_noRF(output_folder: str, counter: int, z_max: int
     plt.close()
 
 
-def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
+def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -582,6 +584,114 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
     plt.savefig(fig_path)
     #df.to_csv(csv_path)
     plt.close()
+
+
+def create_schema_typeA_h5(output_folder: str,
+                           counter: int,
+                           z_max: int,
+                           x_max: int,
+                           trigo_type: int,
+                           seed: int,
+                           RF: bool = False,
+                           save_image: bool = True) -> None:
+    """
+    Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
+
+    Args:
+        output_folder (str): The folder to save the synthetic data.
+        counter (int): Current realization number.
+        z_max (int): Depth of the model.
+        x_max (int): Length of the model.
+        trigo_type (int): Type of trigonometric function to use, with 1 for sine and 2 for cosine.
+        seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
+        save_image (bool): Whether to save the PNG image. Default is True.
+    Returns:
+        None
+    """
+
+    # Define the geometry for the synthetic data generation
+    x_coord = np.arange(0, x_max, 1)  # Array of x coordinates
+    z_coord = np.arange(0, z_max, 1)  # Array of z coordinates
+    xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
+
+    # Set up the matrix geometry
+    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
+    coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
+    values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
+
+    # Generate new y value for each plot and sort them to avoid stacking
+    y1 = layer_boundary_horizA(x_coord, z_max, trigo_type)
+    y2 = layer_boundary_horizA(x_coord, z_max, trigo_type)
+    y3 = layer_boundary_horizA(x_coord, z_max, trigo_type)
+    boundaries = [y1, y2, y3]  # Store the boundaries in a list
+    boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
+
+    # Create containers for each layer
+    area_1, area_2, area_3, area_4 = [], [], [], []
+
+    # Assign grid cells to each layer based on the boundaries
+    for row in range(matrix.shape[0]):
+        for col in range(matrix.shape[1]):
+            if row <= boundaries[0][col]:
+                area_1.append([col, row])
+            elif row <= boundaries[1][col]:
+                area_2.append([col, row])
+            elif row <= boundaries[2][col]:
+                area_3.append([col, row])
+            else:
+                area_4.append([col, row])
+
+    # Fill the layers with the corresponding values
+    if RF:
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
+
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
+
+    else:
+        # Apply the discrete values to the layers
+        all_layers = [area_1, area_2, area_3, area_4]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            random_value = np.random.choice([2, 3])  # Choose random value from 2, 3 with equal probability
+            user_layer_values = [4, 3, random_value, 1]  # Get the i-layer value from an user defined list
+            values[mask] = user_layer_values[i]
+
+    # Store the results in a DataFrame (for plotting image)
+    df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
+
+    # Save to HDF5
+    h5_filename = f"typeA_{counter + 1}.h5"
+    h5_path = os.path.join(output_folder, h5_filename)
+    with h5py.File(h5_path, "w") as f:
+        # Save the 2D array (image matrix) as a dataset
+        # Make sure to save the matrix with the correct orientation
+        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+
+    print(f"Data saved as {h5_filename}")
+
+    # Optionally, save the image as a PNG file
+    if save_image:
+        plt.clf()  # Clear the current figure
+        df_pivot = df.pivot(index="z", columns="x", values="IC")
+        fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
+        ax.set_position([0, 0, 1, 1])
+        ax.imshow(df_pivot, interpolation='none', aspect='auto')
+        plt.axis("off")
+
+        fig_path = os.path.join(output_folder, f"{h5_filename.replace('.h5', '.png')}")
+        plt.savefig(fig_path)
+        plt.close()
+        print(f"Image saved as {fig_path}")
+
 
 
 def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
