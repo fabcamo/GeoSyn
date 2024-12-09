@@ -48,15 +48,15 @@ def layer_boundary_irregular(x_coord: np.array, z_max:float):
     x_max = len(x_coord)
 
     # Generate amplitude using the pert function with specified range
-    amplitude = np.random.triangular(20, 30, 50)
+    amplitude = np.random.triangular(5, 20, 45)
     # Generate period using the pert function with specified range
-    period = np.random.triangular(250, 500, 700)
+    period = np.random.triangular(250, 1000, 2000)
     # Randomly shift the phase of the wave
     phase_shift = np.random.uniform(low=100, high=1000)
     # Randomly shift the entire wave vertically
     vertical_shift = np.random.uniform(low=0, high=z_max)
     # Choose between sine and cosine wave functions
-    func = np.random.choice([np.sin, np.sin])
+    func = np.random.choice([np.sin, np.cos])
     # Generate the y-coordinates using the chosen function and parameters
     y = amplitude * func(2 * np.pi * (x_coord - phase_shift) / period) + vertical_shift
 

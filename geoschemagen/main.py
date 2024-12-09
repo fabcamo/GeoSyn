@@ -17,9 +17,8 @@ The user needs to input:
     - test_ratio: the percentage of total data for testing
 
 """
-# test test
 # Output folder
-output_folder = r'D:\GeoSchemaGen\tests\typeF'
+output_folder = r'D:\GeoSchemaGen\tests\typeA_RF'
 # if the folder does not exist, create it
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
@@ -33,6 +32,12 @@ no_layers = 6
 x_max = 512
 # Depth (z) of the model
 z_max = 32
+# Use Random Fields
+use_RF = True
+# Define a seed for the random number generator
+seed = 20202020
+# Generate seed
+#seed = np.random.randint(20220412, 20230412)
 
 # Define the type of subsoil model you want to randomly generate
 """
@@ -41,8 +46,9 @@ z_max = 32
     - "C": Horizontal layers with lenses at different positions, up to 4 layers, fixed bottom.
     - "D": Horizontal layers with intercalations sand and clay, up to 7 layers, fixed bottom not always present.
     - "E": Inclined layers
+    - "F": Irregular sinuosoidal layers
 """
-model_type = "F"
+model_type = "A"
 
 # Percentage of total data for validation
 vali_ratio = 0
@@ -59,10 +65,6 @@ if __name__ == "__main__":
     time_current = time.strftime("%d/%m/%Y %H:%M:%S")
     time_start = time.time()
 
-    # Generate seed
-    seed = np.random.randint(20220412, 20230412)
-
-
     # Call the generate_database function to create images
     generate_database(output_folder=output_folder,
                       no_realizations=no_realizations,
@@ -70,7 +72,7 @@ if __name__ == "__main__":
                       seed=seed,
                       model_type=model_type,
                       no_layers=no_layers,
-                      use_RF=False)
+                      use_RF=use_RF)
 
     #TODO: I commented this to try and find the different models scenarios> playing with the layer boundaries....
 

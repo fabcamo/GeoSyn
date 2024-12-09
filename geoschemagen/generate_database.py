@@ -43,6 +43,10 @@ def generate_database(output_folder: str,
                     create_schema(output_folder, counter, z_max, x_max, seed)
                 elif no_layers == 8:
                     create_schema_eight_layers(output_folder, counter, z_max, x_max, seed)
+                elif model_type == "A":
+                    # Just sine (1) or just cosine (2) per model
+                    combine_trigo = np.random.choice([1, 2])
+                    create_schema_typeA(output_folder, counter, z_max, x_max, combine_trigo, seed, True)
                 else:
                     print("Number of layers not supported")
 
@@ -50,7 +54,7 @@ def generate_database(output_folder: str,
                 if model_type == "A":
                     # Just sine (1) or just cosine (2) per model
                     combine_trigo = np.random.choice([1, 2])
-                    create_schema_typeA(output_folder, counter, z_max, x_max, combine_trigo, seed)
+                    create_schema_typeA(output_folder, counter, z_max, x_max, combine_trigo, False)
                 elif model_type == "B":
                     # Mix of both sine and cosine in the same model
                     combine_trigo = 0

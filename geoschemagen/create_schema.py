@@ -483,7 +483,7 @@ def create_schema_eight_layers_noRF(output_folder: str, counter: int, z_max: int
     plt.close()
 
 
-def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int = 20220412):
+def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -497,7 +497,9 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
         counter (int): Current realization number.
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
+        trigo_type (int): Type of trigonometric function to use, with 1 for sine and 2 for cosine.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
     Returns:
         None
     """
@@ -535,20 +537,34 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_4.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4]
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
 
-        # COMPLETELY FIX ORDER: Apply the fixed value to each layer always
-        # Choose random value from 2, 3, 4, 5 with equal probability
-        random_value = np.random.choice([2, 3])
-        # Get the i-layer value from an user defined list
-        user_layer_values = [4, 3, random_value, 1]
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
+
+    elif RF == False:
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4]
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+
+            # Choose random value from 2, 3, 4, 5 with equal probability
+            random_value = np.random.choice([2, 3])
+            # Get the i-layer value from an user defined list
+            user_layer_values = [4, 3, random_value, 1]
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
 
     # Store the results in a dataframe
@@ -938,7 +954,8 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
     #df.to_csv(csv_path)
     plt.close()
 
-#TODO: Create typeF just just irregulars, easy model.
+
+
 def create_schema_typeF(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
