@@ -17,27 +17,6 @@ The user needs to input:
     - test_ratio: the percentage of total data for testing
 
 """
-# Output folder
-output_folder = r'D:\GeoSchemaGen\tests\typeA_RF'
-# if the folder does not exist, create it
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
-
-
-# Number of realizations to generate
-no_realizations = 100
-# Number of layers in the model
-no_layers = 6
-# Length (x) of the model
-x_max = 512
-# Depth (z) of the model
-z_max = 32
-# Use Random Fields
-use_RF = True
-# Define a seed for the random number generator
-seed = 20202020
-# Generate seed
-#seed = np.random.randint(20220412, 20230412)
 
 # Define the type of subsoil model you want to randomly generate
 """
@@ -48,12 +27,38 @@ seed = 20202020
     - "E": Inclined layers
     - "F": Irregular sinuosoidal layers
 """
-model_type = "A"
 
+# Choose the model type
+model_type = "F"
+# Number of realizations to generate
+no_realizations = 100
+# Length (x) of the model
+x_max = 512
+# Depth (z) of the model
+z_max = 32
+# Use Random Fields
+use_RF = True
+# Define a seed for the random number generator
+seed = 20202020
+# Generate seed
+#seed = np.random.randint(20220412, 20230412)
 # Percentage of total data for validation
 vali_ratio = 0
 # Percentage of total data for testing
 test_ratio = 0
+# Output folder
+output_folder = r'D:\GeoSchemaGen\tests'
+
+
+# In the output_folder location, create a folder to save the synthetic data
+# The name of the folder is "type" + model_type + use_RF + date", but if use_RF is True, add RF in the name, else add NoRF
+output_folder = os.path.join(output_folder, "type" + model_type + "_RF" + str(use_RF) + "_" + time.strftime("%Y%m%d"))
+
+# if the folder does not exist, create it
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+
 
 # Geometry pre-process
 x_coord = np.arange(0, x_max, 1)
@@ -71,7 +76,6 @@ if __name__ == "__main__":
                       z_max=z_max, x_max=x_max,
                       seed=seed,
                       model_type=model_type,
-                      no_layers=no_layers,
                       use_RF=use_RF)
 
     #TODO: I commented this to try and find the different models scenarios> playing with the layer boundaries....

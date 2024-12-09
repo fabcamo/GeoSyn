@@ -539,6 +539,7 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
 
     # Fill the layers with the corresponding values
     if RF == True:
+        #TODO: Think if you want to fix some layers like in the No RF case
         # Generate random field models and shuffle them
         layers = generate_rf_group(seed)  # Store the random field models inside layers
         np.random.shuffle(layers)  # Shuffle the layers
@@ -557,8 +558,6 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-            layer_coordinates = coords_to_list[mask]
-
             # Choose random value from 2, 3, 4, 5 with equal probability
             random_value = np.random.choice([2, 3])
             # Get the i-layer value from an user defined list
@@ -585,7 +584,7 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
     plt.close()
 
 
-def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int = 20220412):
+def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type B:
@@ -600,6 +599,7 @@ def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
     Returns:
         None
     """
@@ -643,21 +643,34 @@ def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_6.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # TODO: Think if you want to fix some layers like in the No RF case
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
 
-    # Choose random value from 2, 3, 4, 5 with equal probability
-    random_value = np.random.choice([4, 1])
-    # Get the i-layer value from an user defined list
-    user_layer_values = [random_value, 1, random_value, 3, 2, 5]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
 
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
+    elif RF == False:
+        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
 
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        # Choose random value from 2, 3, 4, 5 with equal probability
+        random_value = np.random.choice([4, 1])
+        # Get the i-layer value from an user defined list
+        user_layer_values = [random_value, 1, random_value, 3, 2, 5]
+
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
     # Store the results in a dataframe
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -677,7 +690,7 @@ def create_schema_typeB(output_folder: str, counter: int, z_max: int, x_max: int
     plt.close()
 
 
-def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int = 20220412):
+def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type C:
@@ -692,6 +705,7 @@ def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
     Returns:
         None
     """
@@ -713,7 +727,6 @@ def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int
     boundaries = [y1, y2, y3]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-
     # Create containers for each layer
     area_1, area_2, area_3, area_4 = [], [], [], []
 
@@ -729,21 +742,31 @@ def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_4.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # TODO: Think if you want to fix some layers like in the No RF case
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
 
-    # Generate random non-repeating values for the layers using NumPy
-    #user_layer_values = np.random.permutation(np.arange(1, 5))
-    #random_value = np.random.choice([2, 4])
-    user_layer_values = [2, 4, 1, 3]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
 
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
+    elif RF == False:
+        all_layers = [area_1, area_2, area_3, area_4]
 
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        user_layer_values = [2, 4, 1, 3]
+
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
     # Store the results in a dataframe
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -763,7 +786,7 @@ def create_schema_typeC(output_folder: str, counter: int, z_max: int, x_max: int
     plt.close()
 
 
-def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int = 20220412):
+def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int, trigo_type: int, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type D:
@@ -778,6 +801,7 @@ def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
     Returns:
         None
     """
@@ -824,20 +848,44 @@ def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_7.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
 
-    random_value = np.random.choice([5, 6])
-    # Generate random non-repeating values for the layers using NumPy
-    user_layer_values = [6, random_value, 5, 6, 5, random_value, 1]
+        # Define my own order of layers
+        # First, let at random choose between two layers
+        random_choice = np.random.choice([0, 1])
+        if random_choice == 0:
+            random_value = layers[4]
+        elif random_choice == 1:
+            random_value = layers[0]
+        else:
+            print("Error in random choice")
+        # Then, create my own order of layers with some layers that are assigned randomly
+        my_layers = [layers[0], random_value, layers[4], layers[0], layers[4], random_value, layers[3]]
 
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
 
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = my_layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
+
+    elif RF == False:
+        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
+
+        random_value = np.random.choice([5, 6])
+        # Generate random non-repeating values for the layers using NumPy
+        user_layer_values = [6, random_value, 5, 6, 5, random_value, 1]
+
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
     # Store the results in a dataframe
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -858,7 +906,7 @@ def create_schema_typeD(output_folder: str, counter: int, z_max: int, x_max: int
 
 
 
-def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int, combine_trigo: bool, seed: int = 20220412):
+def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int, combine_trigo: bool, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -874,6 +922,7 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
         x_max (int): Length of the model.
         combine_trigo (bool): Type of trigonometric function to use.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
     Returns:
         None
     """
@@ -920,22 +969,36 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_5.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4, area_5]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # TODO: Think if you want to fix some layers like in the No RF case
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
 
-    # Choose random value from 2, 3, 4, 5 with equal probability
-    random_value = np.random.choice([2, 4])
-    # Get the i-layer value from an user defined list
-    user_layer_values = [5, random_value, 3, random_value, 1]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4, area_5]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
 
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
+    elif RF == False:
+        all_layers = [area_1, area_2, area_3, area_4, area_5]
 
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        # Choose random value from 2, 4 with equal probability
+        random_value = np.random.choice([2, 4])
+        # Get the i-layer value from an user defined list
+        user_layer_values = [5, random_value, 3, random_value, 1]
 
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
     # Store the results in a dataframe
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -956,7 +1019,7 @@ def create_schema_typeE(output_folder: str, counter: int, z_max: int, x_max: int
 
 
 
-def create_schema_typeF(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
+def create_schema_typeF(output_folder: str, counter: int, z_max: int, x_max: int, seed: int, RF: bool = False):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -971,6 +1034,8 @@ def create_schema_typeF(output_folder: str, counter: int, z_max: int, x_max: int
         z_max (int): Depth of the model.
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is False.
+
     Returns:
         None
     """
@@ -1012,21 +1077,37 @@ def create_schema_typeF(output_folder: str, counter: int, z_max: int, x_max: int
             else:
                 area_5.append([col, row])
 
-    # Apply the random field models to the layers
-    all_layers = [area_1, area_2, area_3, area_4, area_5]
+    # Fill the layers with the corresponding values
+    if RF == True:
+        # TODO: Think if you want to fix some layers like in the No RF case
+        # Generate random field models and shuffle them
+        layers = generate_rf_group(seed)  # Store the random field models inside layers
+        np.random.shuffle(layers)  # Shuffle the layers
 
-    # Choose random value from 2, 3, 4, 5 with equal probability
-    random_value = np.random.choice([2, 4])
-    # Get the i-layer value from an user defined list
-    user_layer_values = [5, random_value, 3, random_value, 1]
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4, area_5]
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            layer_IC = layers[i](layer_coordinates.T)
+            values[mask] = layer_IC
 
-    for i, lst in enumerate(all_layers):
-        # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-        layer_coordinates = coords_to_list[mask]
+    elif RF == False:
+        # Apply the random field models to the layers
+        all_layers = [area_1, area_2, area_3, area_4, area_5]
 
-        # Apply the user defined values to the mask
-        values[mask] = user_layer_values[i]
+        # Choose random value from 2, 3, 4, 5 with equal probability
+        random_value = np.random.choice([2, 4])
+        # Get the i-layer value from an user defined list
+        user_layer_values = [5, random_value, 3, random_value, 1]
+
+        for i, lst in enumerate(all_layers):
+            # Create a mask to select the grid cells for each layer
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+
+            # Apply the user defined values to the mask
+            values[mask] = user_layer_values[i]
 
 
     # Store the results in a dataframe
