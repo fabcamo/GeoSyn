@@ -593,7 +593,8 @@ def create_schema_typeA_h5(output_folder: str,
                            trigo_type: int,
                            seed: int,
                            RF: bool = False,
-                           save_image: bool = True) -> None:
+                           save_image: bool = False,
+                           save_csv: bool = False) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
 
@@ -605,7 +606,7 @@ def create_schema_typeA_h5(output_folder: str,
         trigo_type (int): Type of trigonometric function to use, with 1 for sine and 2 for cosine.
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
-        save_image (bool): Whether to save the PNG image. Default is True.
+        save_image (bool): Whether to save the PNG image. Default is False.
     Returns:
         None
     """
@@ -691,6 +692,12 @@ def create_schema_typeA_h5(output_folder: str,
         plt.savefig(fig_path)
         plt.close()
         print(f"Image saved as {fig_path}")
+
+    # Optionally, save the CSV file
+    if save_csv:
+        csv_path = os.path.join(output_folder, f"{h5_filename.replace('.h5', '.csv')}")
+        df.to_csv(csv_path, index=False)
+        print(f"CSV saved as {csv_path}")
 
 
 

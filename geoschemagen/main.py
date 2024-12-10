@@ -58,12 +58,13 @@ output_folder = os.path.join(output_folder, "type" + model_type + "_RF" + str(us
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-
-
 # Geometry pre-process
 x_coord = np.arange(0, x_max, 1)
 z_coord = np.arange(0, z_max, 1)
 xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")
+
+
+
 
 if __name__ == "__main__":
     # Check the time and start the timers

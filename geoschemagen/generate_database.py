@@ -41,7 +41,7 @@ def generate_database(output_folder: str,
             if model_type == "A":
                 # Just sine (1) or just cosine (2) per model
                 combine_trigo = np.random.choice([1, 2])
-                create_schema_typeA_h5(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=1)
+                create_schema_typeA_h5(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=1, save_csv=1)
             elif model_type == "B":
                 # Mix of both sine and cosine in the same model
                 combine_trigo = 0
