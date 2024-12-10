@@ -502,6 +502,7 @@ def create_schema_typeA(output_folder: str, counter: int, z_max: int, x_max: int
         trigo_type (int): Type of trigonometric function to use, with 1 for sine and 2 for cosine.
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
+
     Returns:
         None
     """
@@ -607,6 +608,8 @@ def create_schema_typeA_h5(output_folder: str,
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
         save_image (bool): Whether to save the PNG image. Default is False.
+        save_csv (bool): Whether to save the CSV file. Default is False.
+
     Returns:
         None
     """
@@ -646,25 +649,34 @@ def create_schema_typeA_h5(output_folder: str,
     # Fill the layers with the corresponding values
     if RF:
         # Generate random field models and shuffle them
-        layers = generate_rf_group(seed)  # Store the random field models inside layers
-        np.random.shuffle(layers)  # Shuffle the layers
-
+        layers_with_names = generate_rf_group(seed)  # Store the random field models and names
+        np.random.shuffle(layers_with_names)  # Shuffle the layers with their names
+        # Create a list to store the materials used in each layer
+        materials_list = []
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             layer_coordinates = coords_to_list[mask]
-            layer_IC = layers[i](layer_coordinates.T)
+
+            # Extract the random field and material name
+            layer_rf, material_name = layers_with_names[i]
+            layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
+            # Append the material name to the materials list
+            materials_list.append(material_name)
 
     else:
         # Apply the discrete values to the layers
         all_layers = [area_1, area_2, area_3, area_4]
+        random_value = np.random.choice([2, 3])  # Choose random value from 2, 3 with equal probability
+        user_layer_values = [4, 3, random_value, 1]  # Get the i-layer value from an user defined list
+        # Append the value used in each layer to a list
+        materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-            random_value = np.random.choice([2, 3])  # Choose random value from 2, 3 with equal probability
-            user_layer_values = [4, 3, random_value, 1]  # Get the i-layer value from an user defined list
             values[mask] = user_layer_values[i]
+
 
     # Store the results in a DataFrame (for plotting image)
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -676,6 +688,12 @@ def create_schema_typeA_h5(output_folder: str,
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
         f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+
+        # Save metadata as attributes
+        f.attrs["date"] = str(datetime.datetime.now())
+        f.attrs["seed"] = seed
+        f.attrs["randomfield"] = RF
+        f.attrs["materials"] = materials_list
 
     print(f"Data saved as {h5_filename}")
 

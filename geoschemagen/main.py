@@ -37,7 +37,7 @@ x_max = 512
 # Depth (z) of the model
 z_max = 32
 # Use Random Fields
-use_RF = True
+use_RF = False
 # Define a seed for the random number generator
 seed = 20202020
 # Generate seed
