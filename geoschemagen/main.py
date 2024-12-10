@@ -15,7 +15,6 @@ The user needs to input:
     - z_max: the depth of the model
     - vali_ratio: the percentage of total data for validation
     - test_ratio: the percentage of total data for testing
-
 """
 
 # Define the type of subsoil model you want to randomly generate
@@ -37,7 +36,7 @@ x_max = 512
 # Depth (z) of the model
 z_max = 32
 # Use Random Fields
-use_RF = False
+use_RF = True
 # Define a seed for the random number generator
 seed = 20202020
 # Generate seed

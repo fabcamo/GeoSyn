@@ -690,6 +690,8 @@ def create_schema_typeA_h5(output_folder: str,
         f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
+        f.attrs["model_type"] = "A"
+        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
