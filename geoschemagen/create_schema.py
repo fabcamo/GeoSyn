@@ -1016,10 +1016,25 @@ def create_schema_typeC(output_folder: str,
 
     # Fill the layers with the corresponding values
     if RF:
-        # TODO: Think if you want to fix some layers like in the No RF case
         # Generate random field models and shuffle them
         layers_with_names = generate_rf_group(seed)  # Store the random field models and names
-        np.random.shuffle(layers_with_names)  # Shuffle the layers with their names
+        # Define my own order of layers
+        # First, let at random choose between two layers
+        random_choice = np.random.choice([4, 1])
+
+        if random_choice == 4:
+            random_value = layers_with_names[4]
+        elif random_choice == 1:
+            random_value = layers_with_names[1]
+        else:
+            raise ValueError("Invalid random choice in RF model A")
+        # Then, create my own order of layers with some layers that are assigned randomly
+        #TODO: Check if this is the order that I want
+        my_layers = [layers_with_names[2],
+                     random_value,
+                     layers_with_names[1],
+                     layers_with_names[3]]
+
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
@@ -1027,9 +1042,8 @@ def create_schema_typeC(output_folder: str,
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             layer_coordinates = coords_to_list[mask]
-
             # Extract the random field and material name
-            layer_rf, material_name = layers_with_names[i]
+            layer_rf, material_name = my_layers[i]
             layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
             # Append the material name to the materials list
@@ -1190,10 +1204,11 @@ def create_schema_typeD(output_folder: str,
         layers_with_names = generate_rf_group(seed)  # Store the random field models inside layers
         # Define my own order of layers
         # First, let at random choose between two layers
-        random_choice = np.random.choice([0, 1])
-        if random_choice == 0:
+        random_choice = np.random.choice([4, 0])
+
+        if random_choice == 4:
             random_value = layers_with_names[4]
-        elif random_choice == 1:
+        elif random_choice == 0:
             random_value = layers_with_names[0]
         else:
             raise ValueError("Invalid random choice in RF model A")
@@ -1376,21 +1391,35 @@ def create_schema_typeE(output_folder: str,
 
     # Fill the layers with the corresponding values
     if RF:
-        # TODO: Think if you want to fix some layers like in the No RF case
         # Generate random field models and shuffle them
         layers_with_names = generate_rf_group(seed)  # Store the random field models and names
-        np.random.shuffle(layers_with_names)  # Shuffle the layers with their names
+        # Define my own order of layers
+        # First, let at random choose between two layers
+        random_choice = np.random.choice([2, 4])
+
+        if random_choice == 2:
+            random_value = layers_with_names[2]
+        elif random_choice == 4:
+            random_value = layers_with_names[4]
+        else:
+            raise ValueError("Invalid random choice in RF model A")
+        # Then, create my own order of layers with some layers that are assigned randomly
+        # TODO: Check if this is the order that I want
+        my_layers = [layers_with_names[5],
+                     random_value,
+                     layers_with_names[3],
+                     random_value,
+                     layers_with_names[1]]
+
         # Create a list to store the materials used in each layer
         materials_list = []
-
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             layer_coordinates = coords_to_list[mask]
-
             # Extract the random field and material name
-            layer_rf, material_name = layers_with_names[i]
+            layer_rf, material_name = my_layers[i]
             layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
             # Append the material name to the materials list
@@ -1545,10 +1574,26 @@ def create_schema_typeF(output_folder: str,
 
     # Fill the layers with the corresponding values
     if RF:
-        # TODO: Think if you want to fix some layers like in the No RF case
         # Generate random field models and shuffle them
         layers_with_names = generate_rf_group(seed)  # Store the random field models inside layers
-        np.random.shuffle(layers_with_names)  # Shuffle the layers
+        # Define my own order of layers
+        # First, let at random choose between two layers
+        random_choice = np.random.choice([2, 4])
+
+        if random_choice == 2:
+            random_value = layers_with_names[2]
+        elif random_choice == 4:
+            random_value = layers_with_names[4]
+        else:
+            raise ValueError("Invalid random choice in RF model A")
+        # Then, create my own order of layers with some layers that are assigned randomly
+        # TODO: Check if this is the order that I want
+        my_layers = [layers_with_names[5],
+                     random_value,
+                     layers_with_names[3],
+                     random_value,
+                     layers_with_names[1]]
+
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
@@ -1556,9 +1601,8 @@ def create_schema_typeF(output_folder: str,
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             layer_coordinates = coords_to_list[mask]
-
             # Extract the random field and material name
-            layer_rf, material_name = layers_with_names[i]
+            layer_rf, material_name = my_layers[i]
             layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
             # Append the material name to the materials list
