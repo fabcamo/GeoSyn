@@ -28,7 +28,7 @@ The user needs to input:
 """
 
 # USER DEFINED PARAMETERS FOR THE GENERATION
-model_type = "A"        # Choose the model type
+model_type = "F"
 no_realizations = 20    # Number of realizations to generate
 # Output folder
 output_folder = r'D:\GeoSchemaGen\tests'
@@ -40,7 +40,7 @@ use_RF = True               # On or off: use Random Fields
 create_cptlike = True       # On or off: create CPT-like images
 save_image = True           # On or off: save the images
 save_cptlike_image = True   # On or off: save the cpt-like images
-save_csv = True             # On or off: save the csv files
+save_csv = False             # On or off: save the csv files
 
 seed = 20202020     # Define a seed for the random number generator
 #seed = np.random.randint(20220412, 20230412)

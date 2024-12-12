@@ -77,15 +77,58 @@ def generate_database(output_folder: str,
 
             elif model_type == "C":
                 combine_trigo = 0
-                create_schema_typeC(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeC(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    trigo_type=combine_trigo,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             elif model_type == "D":
                 combine_trigo = 0
-                create_schema_typeD(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeD(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    trigo_type=combine_trigo,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             elif model_type == "E":
                 combine_trigo = False
-                create_schema_typeE(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeE(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    trigo_type=combine_trigo,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             elif model_type == "F":
-                create_schema_typeF(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeF(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             else:
                 print("Model type selected not supported")
 
