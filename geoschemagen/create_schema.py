@@ -687,7 +687,7 @@ def create_schema_typeA(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "A"
@@ -832,7 +832,7 @@ def create_schema_typeB(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "B"
@@ -971,7 +971,7 @@ def create_schema_typeC(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "C"
@@ -1137,7 +1137,7 @@ def create_schema_typeD(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "D"
@@ -1175,7 +1175,7 @@ def create_schema_typeE(output_folder: str,
                         counter: int,
                         z_max: int,
                         x_max: int,
-                        combine_trigo: bool,
+                        trigo_type: bool,
                         seed: int,
                         RF: bool = False,
                         save_image: bool = False,
@@ -1214,7 +1214,7 @@ def create_schema_typeE(output_folder: str,
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
     # Check if combine_trigo is True, if it is, choose at random between sine and cosine, else, stick with one for all layers
-    if combine_trigo == True:
+    if trigo_type == True:
         trigo_type = 0
     else:
         trigo_type = np.random.choice([1, 2])
@@ -1257,16 +1257,16 @@ def create_schema_typeE(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            for i, lst in enumerate(all_layers):
-                mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
-                layer_coordinates = coords_to_list[mask]
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
 
-                # Extract the random field and material name
-                layer_rf, material_name = layers_with_names[i]
-                layer_IC = layer_rf(layer_coordinates.T)
-                values[mask] = layer_IC
-                # Append the material name to the materials list
-                materials_list.append(material_name)
+            # Extract the random field and material name
+            layer_rf, material_name = layers_with_names[i]
+            layer_IC = layer_rf(layer_coordinates.T)
+            values[mask] = layer_IC
+            # Append the material name to the materials list
+            materials_list.append(material_name)
+
 
     else:
         # Apply the discrete values to the layers
@@ -1291,7 +1291,7 @@ def create_schema_typeE(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "E"
@@ -1436,7 +1436,7 @@ def create_schema_typeF(output_folder: str,
     with h5py.File(h5_path, "w") as f:
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
-        f.create_dataset("image_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
 
         # Save metadata as attributes
         f.attrs["model_type"] = "F"

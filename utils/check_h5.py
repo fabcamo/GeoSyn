@@ -47,5 +47,5 @@ def load_and_plot_h5(h5_path: str, scale_factor: float = 2):
 
 
 # Example usage:
-h5_file_path = r"D:\GeoSchemaGen\tests\typeA_RFFalse_20241210\typeA_5.h5"
+h5_file_path = r"D:\GeoSchemaGen\tests\typeF_RFTrue_20241212\typeF_2.h5"
 load_and_plot_h5(h5_file_path, scale_factor=2)  # Increase size by factor of 2

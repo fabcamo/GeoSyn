@@ -11,7 +11,9 @@ def generate_database(output_folder: str,
                       x_max: int,
                       seed:int,
                       model_type:str,
-                      use_RF:bool = True):
+                      use_RF:bool = True,
+                      save_image:bool = False,
+                      save_csv:bool = False):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
 
@@ -41,22 +43,22 @@ def generate_database(output_folder: str,
             if model_type == "A":
                 # Just sine (1) or just cosine (2) per model
                 combine_trigo = np.random.choice([1, 2])
-                create_schema_typeA(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeA(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             elif model_type == "B":
                 # Mix of both sine and cosine in the same model
                 combine_trigo = 0
-                create_schema_typeB(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeB(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             elif model_type == "C":
                 combine_trigo = 0
-                create_schema_typeC(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeC(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             elif model_type == "D":
                 combine_trigo = 0
-                create_schema_typeD(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeD(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             elif model_type == "E":
                 combine_trigo = False
-                create_schema_typeE(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeE(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             elif model_type == "F":
-                create_schema_typeF(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, seed=seed, RF=use_RF, save_image=False, save_csv=False)
+                create_schema_typeF(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
             else:
                 print("Model type selected not supported")
 
