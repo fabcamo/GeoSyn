@@ -27,27 +27,26 @@ The user needs to input:
     - "F": Irregular sinuosoidal layers
 """
 
-# Choose the model type
-model_type = "A"
-# Number of realizations to generate
-no_realizations = 100
-# Length (x) of the model
-x_max = 512
-# Depth (z) of the model
-z_max = 32
-# Use Random Fields
-use_RF = True
-# Define a seed for the random number generator
-seed = 20202020
-# Generate seed
-#seed = np.random.randint(20220412, 20230412)
-# Percentage of total data for validation
-vali_ratio = 0
-# Percentage of total data for testing
-test_ratio = 0
+# USER DEFINED PARAMETERS FOR THE GENERATION
+model_type = "A"        # Choose the model type
+no_realizations = 20    # Number of realizations to generate
 # Output folder
 output_folder = r'D:\GeoSchemaGen\tests'
 
+x_max = 512     # Length (x) of the model
+z_max = 32      # Depth (z) of the model
+
+use_RF = True       # On or off: use Random Fields
+save_image = False  # On or off: save the images
+save_csv = False    # On or off: save the csv files
+
+seed = 20202020     # Define a seed for the random number generator
+#seed = np.random.randint(20220412, 20230412)
+
+vali_ratio = 0      # Percentage of total data for validation
+test_ratio = 0      # Percentage of total data for testing
+
+########################################################################################################################
 
 # In the output_folder location, create a folder to save the synthetic data
 # The name of the folder is "type" + model_type + use_RF + date", but if use_RF is True, add RF in the name, else add NoRF
