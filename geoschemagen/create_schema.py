@@ -587,18 +587,21 @@ def create_schema_typeA_OLD(output_folder: str, counter: int, z_max: int, x_max:
     #df.to_csv(csv_path)
     plt.close()
 
+########################################################################################################################
+# NEW SCHEMAS FOR v.2.0
+########################################################################################################################
 
 def create_schema_typeA(output_folder: str,
-                           counter: int,
-                           z_max: int,
-                           x_max: int,
-                           trigo_type: int,
-                           seed: int,
-                           RF: bool = False,
-                           create_cptlike: bool = False,
-                           save_image: bool = False,
-                           save_cptlike_image: bool = False,
-                           save_csv: bool = False) -> None:
+                        counter: int,
+                        z_max: int,
+                        x_max: int,
+                        trigo_type: int,
+                        seed: int,
+                        RF: bool = False,
+                        create_cptlike: bool = False,
+                        save_image: bool = False,
+                        save_cptlike_image: bool = False,
+                        save_csv: bool = False) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
 
@@ -655,9 +658,23 @@ def create_schema_typeA(output_folder: str,
     if RF:
         # Generate random field models and shuffle them
         layers_with_names = generate_rf_group(seed)  # Store the random field models and names
-        np.random.shuffle(layers_with_names)  # Shuffle the layers with their names
-        # Create a list to store the materials used in each layer
-        materials_list = []
+        # Define the order of the layers
+        random_choice = np.random.choice([2, 3]) # Choose random value from 2, 3 with equal probability
+        if random_choice == 2:
+            random_value = layers_with_names[2]
+        elif random_choice == 3:
+            random_value = layers_with_names[3]
+        else:
+            raise ValueError("Invalid random choice in RF model B")
+
+        # Combine the random and fixed layers
+        #TODO: Check if this is the order that I want
+        my_layers = [layers_with_names[4],
+                     layers_with_names[3],
+                     random_value,
+                     layers_with_names[1]]
+
+        materials_list = [] # Create a list to store the material names
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
@@ -665,7 +682,7 @@ def create_schema_typeA(output_folder: str,
             layer_coordinates = coords_to_list[mask]
 
             # Extract the random field and material name
-            layer_rf, material_name = layers_with_names[i]
+            layer_rf, material_name = my_layers[i]
             layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
             # Append the material name to the materials list
@@ -825,7 +842,24 @@ def create_schema_typeB(output_folder: str,
         # TODO: Think if you want to fix some layers like in the No RF case
         # Generate random field models and shuffle them
         layers_with_names = generate_rf_group(seed)  # Store the random field models inside layers
-        np.random.shuffle(layers_with_names)  # Shuffle the layers
+        # Define the order of the layers
+        random_choice = np.random.choice([4, 1])  # Choose random value from 2, 3 with equal probability
+        if random_choice == 4:
+            random_value = layers_with_names[4]
+        elif random_choice == 1:
+            random_value = layers_with_names[1]
+        else:
+            raise ValueError("Invalid random choice in RF model A")
+
+        # Then, create my own order of layers with some layers that are assigned randomly
+        #TODO: Check if this is the order that I want
+        my_layers = [random_value,
+                     layers_with_names[1],
+                     random_value,
+                     layers_with_names[3],
+                     layers_with_names[2],
+                     layers_with_names[5]]
+
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
@@ -833,9 +867,8 @@ def create_schema_typeB(output_folder: str,
         for i, lst in enumerate(all_layers):
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             layer_coordinates = coords_to_list[mask]
-
             # Extract the random field and material name
-            layer_rf, material_name = layers_with_names[i]
+            layer_rf, material_name = my_layers[i]
             layer_IC = layer_rf(layer_coordinates.T)
             values[mask] = layer_IC
             # Append the material name to the materials list
@@ -1163,7 +1196,7 @@ def create_schema_typeD(output_folder: str,
         elif random_choice == 1:
             random_value = layers_with_names[0]
         else:
-            print("Error in random choice")
+            raise ValueError("Invalid random choice in RF model A")
         # Then, create my own order of layers with some layers that are assigned randomly
         my_layers = [layers_with_names[0],
                      random_value,

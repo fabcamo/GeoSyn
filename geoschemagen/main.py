@@ -28,7 +28,7 @@ The user needs to input:
 """
 
 # USER DEFINED PARAMETERS FOR THE GENERATION
-model_type = "F"
+model_type = "B"
 no_realizations = 20    # Number of realizations to generate
 # Output folder
 output_folder = r'D:\GeoSchemaGen\tests'
