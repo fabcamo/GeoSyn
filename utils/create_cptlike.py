@@ -288,3 +288,45 @@ def from_schema_to_cptlike(path_to_images: str, miss_rate: float, min_distance: 
     cptlike_img = np.reshape(missing_data, (no_samples, no_rows, no_cols, 1))
 
     return cptlike_img
+
+
+def create_cptlike_array(image_matrix: np.array, x_max: int, z_max: int, plot: bool = False):
+    """
+    Take the synthetic 2D image generated and apply a missing rate to simulate incomplete data for CPT-like images.
+
+    Args:
+        image_matrix (np.array): The synthetic 2D image generated
+        x_max (int): The maximum value of the x-axis.
+        z_max (int): The maximum value of the z-axis.
+        plot (bool): Whether to plot the original and CPT-like images side by side. Default is False.
+
+    Returns:
+        cptlike_img (np.array): The incomplete data (cpt like image) reshaped for image processing.
+    """
+    # Reshape the image matrix to the required format for further processing
+    data_or = image_matrix.reshape(x_max, z_max).T
+
+    # Remove a random number of columns from the matrix at a specified rate
+    data = remove_random_columns(data_or, miss_rate=0.99, min_distance=50)
+
+    if plot:
+        # Plot both images side by side
+        fig, ax = plt.subplots(2, 1, figsize=(12, 6))
+
+        ax[0].imshow(data_or)
+        ax[0].set_title("Original Data")
+        ax[0].axis("off")  # Optionally turn off axes for better visualization
+
+        ax[1].imshow(data)
+        ax[1].set_title("CPT-like Data")
+        ax[1].axis("off")
+
+        plt.tight_layout()
+        plt.show()
+        plt.close()
+
+
+    return data
+
+
+    return data

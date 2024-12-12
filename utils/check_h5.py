@@ -1,6 +1,5 @@
 import h5py
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 def load_and_plot_h5(h5_path: str, scale_factor: float = 2):
@@ -25,27 +24,33 @@ def load_and_plot_h5(h5_path: str, scale_factor: float = 2):
             print(f"  {attr}: {f.attrs[attr]}")
 
         # Access the image matrix dataset
-        image_matrix = f["image_matrix"][:]
+        image_matrix = f["ICvalues_matrix"][:]
+        # Access the cpt-like image dataset
+        cptlike_image = f["cptlike_matrix"][:]
 
-        # Check the shape of the loaded matrix
-        z_max, x_max = image_matrix.shape
-        print(f"Matrix shape: {image_matrix.shape}")
 
         # Calculate figure size based on the matrix dimensions (matching the original format)
-        figsize = (x_max / 100 * scale_factor, z_max / 100 * scale_factor)
+        #z_max, x_max = image_matrix.shape
+        #figsize = (x_max / 100 * scale_factor, z_max / 50 * scale_factor)  # Adjusting for 2 plots vertically
 
-        # Create the figure once with the correct size
-        fig, ax = plt.subplots(figsize=figsize)
+        # Create a 2x1 grid for plotting
+        fig, axs = plt.subplots(2, 1, figsize=(12,6))
 
-        # Plot the matrix without interpolation (use 'none')
-        ax.imshow(image_matrix, cmap='viridis', interpolation='none', aspect='auto')  # aspect='auto'
-        ax.axis("off")  # Turn off axis
-        ax.set_title("Image Matrix from HDF5")
+        # Plot the image matrix
+        axs[0].imshow(image_matrix, cmap='viridis', interpolation='none', aspect='auto')
+        axs[0].axis("off")  # Turn off axis
+        axs[0].set_title("Image Matrix from HDF5")
+
+        # Plot the cpt-like image
+        axs[1].imshow(cptlike_image, cmap='viridis', interpolation='none', aspect='auto')
+        axs[1].axis("off")  # Turn off axis
+        axs[1].set_title("CPT-like Matrix from HDF5")
+
+        # Adjust layout for better appearance
+        plt.tight_layout()
 
         # Show the plot
         plt.show()
-
-
 # Example usage:
-h5_file_path = r"D:\GeoSchemaGen\tests\typeF_RFTrue_20241212\typeF_2.h5"
+h5_file_path = r"D:\GeoSchemaGen\tests\typeB_RFTrue_20241212\typeB_2.h5"
 load_and_plot_h5(h5_file_path, scale_factor=2)  # Increase size by factor of 2

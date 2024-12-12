@@ -12,7 +12,9 @@ def generate_database(output_folder: str,
                       seed:int,
                       model_type:str,
                       use_RF:bool = True,
+                      create_cptlike:bool = False,
                       save_image:bool = False,
+                      save_cptlike_image:bool = False,
                       save_csv:bool = False):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
@@ -25,6 +27,9 @@ def generate_database(output_folder: str,
         seed (int): The seed for the random number generator.
         model_type (str): The type of subsoil model to generate.
         use_RF (bool): Whether to use Random Fields. Default is True.
+        create_cptlike (bool): Whether to create CPT-like images. Default is False.
+        save_image (bool): Whether to save the images. Default is False.
+        save_csv (bool): Whether to save the CSV files. Default is False.
 
     Return:
         None
@@ -43,11 +48,33 @@ def generate_database(output_folder: str,
             if model_type == "A":
                 # Just sine (1) or just cosine (2) per model
                 combine_trigo = np.random.choice([1, 2])
-                create_schema_typeA(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeA(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    trigo_type=combine_trigo,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             elif model_type == "B":
                 # Mix of both sine and cosine in the same model
                 combine_trigo = 0
-                create_schema_typeB(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)
+                create_schema_typeB(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    trigo_type=combine_trigo,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
             elif model_type == "C":
                 combine_trigo = 0
                 create_schema_typeC(output_folder=output_folder, counter=counter, z_max=z_max, x_max=x_max, trigo_type=combine_trigo, seed=seed, RF=use_RF, save_image=save_image, save_csv=save_csv)

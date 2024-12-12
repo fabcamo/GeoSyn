@@ -6,7 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from geoschemagen.create_rfs import generate_rf_group
 from geoschemagen.create_layer_boundaries import layer_boundary, layer_boundary_horizA, layer_boundary_irregular
-from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_horizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
+from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
+from utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
 
 
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
@@ -594,7 +595,9 @@ def create_schema_typeA(output_folder: str,
                            trigo_type: int,
                            seed: int,
                            RF: bool = False,
+                           create_cptlike: bool = False,
                            save_image: bool = False,
+                           save_cptlike_image: bool = False,
                            save_csv: bool = False) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
@@ -607,6 +610,7 @@ def create_schema_typeA(output_folder: str,
         trigo_type (int): Type of trigonometric function to use, with 1 for sine and 2 for cosine.
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
+        create_cptlike (bool): Whether to create a CPT-like model. Default is False.
         save_image (bool): Whether to save the PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
 
@@ -677,6 +681,10 @@ def create_schema_typeA(output_folder: str,
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             values[mask] = user_layer_values[i]
 
+    # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
+    if create_cptlike:
+        cpt_like_image = create_cptlike_array(image_matrix=values, x_max=x_max, z_max=z_max)
+
 
     # Store the results in a DataFrame (for plotting image)
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
@@ -688,15 +696,18 @@ def create_schema_typeA(output_folder: str,
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
         f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
         # Save metadata as attributes
         f.attrs["model_type"] = "A"
+        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         #TODO: Add a description that makes sense for the model
         f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
         f.attrs["materials"] = materials_list
+
 
     print(f"Data saved as {h5_filename}")
 
@@ -720,6 +731,20 @@ def create_schema_typeA(output_folder: str,
         df.to_csv(csv_path, index=False)
         print(f"CSV saved as {csv_path}")
 
+    # Optionally, save the CPTlike image as a PNG file
+    if save_cptlike_image:
+        plt.clf()  # Clear the current figure
+        fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
+        ax.set_position([0, 0, 1, 1])
+        ax.imshow(cpt_like_image, interpolation='none', aspect='auto')
+        plt.axis("off")
+
+        fig_path = os.path.join(output_folder, f"cptlike_{h5_filename.replace('.h5', '.png')}")
+        plt.savefig(fig_path)
+        plt.close()
+        print(f"Image saved as {fig_path}")
+
+
 
 def create_schema_typeB(output_folder: str,
                         counter: int,
@@ -728,6 +753,7 @@ def create_schema_typeB(output_folder: str,
                         trigo_type: int,
                         seed: int,
                         RF: bool = False,
+                        create_cptlike: bool = False,
                         save_image: bool = False,
                         save_csv: bool = False) -> None:
     """
@@ -745,6 +771,7 @@ def create_schema_typeB(output_folder: str,
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
+        create_cptlike (bool): Whether to create a CPT-like data. Default is False.
         save_image (bool): Whether to save the PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
 
@@ -823,6 +850,10 @@ def create_schema_typeB(output_folder: str,
             mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
             values[mask] = user_layer_values[i]
 
+    # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
+    if create_cptlike:
+        cpt_like_image = create_cptlike_array(image_matrix=values, x_max=x_max, z_max=z_max)
+
     # Store the results in a dataframe
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
 
@@ -833,9 +864,11 @@ def create_schema_typeB(output_folder: str,
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
         f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
         # Save metadata as attributes
         f.attrs["model_type"] = "B"
+        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         #TODO: Add a description that makes sense for the model
         f.attrs["description"] = "Deltaic transition area with subhorizontal layers and complex indentations with the pleistocene sand as base layer at 30 m depth"
         f.attrs["date"] = str(datetime.datetime.now())
@@ -873,6 +906,7 @@ def create_schema_typeC(output_folder: str,
                         trigo_type: int,
                         seed: int,
                         RF: bool = False,
+                        create_cptlike: bool = False,
                         save_image: bool = False,
                         save_csv: bool = False) -> None:
     """
@@ -890,6 +924,7 @@ def create_schema_typeC(output_folder: str,
         x_max (int): Length of the model.
         seed (int): Seed for random number generation.
         RF (bool): Whether to use Random Fields. Default is False.
+        create_cptlike (bool): Whether to create the CPT-like data. Default is False.
         save_image (bool): Whether to save the PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
 
@@ -962,7 +997,11 @@ def create_schema_typeC(output_folder: str,
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
-    # Store the results in a dataframe
+    # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
+    if create_cptlike:
+        cpt_like_image = create_cptlike_array(image_matrix=values, x_max=x_max, z_max=z_max)
+
+    # Store the results in a DataFrame (for plotting image)
     df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
 
     # Save to HDF5
@@ -972,9 +1011,11 @@ def create_schema_typeC(output_folder: str,
         # Save the 2D array (image matrix) as a dataset
         # Make sure to save the matrix with the correct orientation
         f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
         # Save metadata as attributes
         f.attrs["model_type"] = "C"
+        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
         f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
         f.attrs["date"] = str(datetime.datetime.now())
@@ -1468,4 +1509,5 @@ def create_schema_typeF(output_folder: str,
         csv_path = os.path.join(output_folder, f"{h5_filename.replace('.h5', '.csv')}")
         df.to_csv(csv_path, index=False)
         print(f"CSV saved as {csv_path}")
+
 
