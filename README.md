@@ -40,7 +40,6 @@ cd GeoSyn
 pip install -r requirements.txt
 ```
 
-
 ## Usage
 
 To generate the synthetic images, run the `main.py` script:
@@ -51,7 +50,6 @@ python main.py
 
 The script will generate a synthetic database of geotechnical cross-sections in the `output` directory.
 
-
 ### Configuration
 
 Before running the script, ensure you configure the following key input parameters:
@@ -60,26 +58,55 @@ Before running the script, ensure you configure the following key input paramete
 - **Size in X**: The length of the model in pixels.
 - **Size in Y**: The depth of the model in pixels.
 
-These parameters can be adjusted within the `main.py` file.
+These parameters can be adjusted directly within the `main.py` file.
+
+For more advanced use, users can also customize geotechnical properties, their distributions, and boundary geometry settings. This requires deeper modifications to the codebase, particularly in the modules responsible for random field generation and stratigraphy modeling.
+
 
 ## Output
 
 GeoSyn outputs geotechnical cross-sections in both PNG and CSV formats, formatted to a size of 32x512 pixels to maintain a 1:16 ratio for length over depth. This ensures computational efficiency and visual fidelity.
 
-## License
-This project is licensed under the MIT License. You are free to use, modify, and distribute this software under the terms of that license.
+---
 
-## Third-party licenses
-GeoSyn uses the following third-party library:
+## 📄 Related Publication
 
-GSTools
-Repository: https://github.com/GeoStat-Framework/GSTools
+GeoSyn is used in the following publication as part of a deep generative modeling pipeline for subsurface stratigraphy:
 
-License: MIT License
-
-## Research and Contributions
-
-This project is part of broader research into the application of generative adversarial networks in geotechnical engineering. For more information and to access the full thesis, please visit [official thesis](https://repository.tudelft.nl/islandora/object/uuid:c18cb6cf-3574-484d-aacc-dabd882341de?collection=education).
+Campos Montero, F.A., Zuada Coelho, B., Smyrniou, E., Taormina, R., & Vardon, P.J. (2025)  
+*SchemaGAN: A conditional Generative Adversarial Network for geotechnical subsurface schematisation*  
+Computers and Geotechnics, 183, 107177  
+[https://doi.org/10.1016/j.compgeo.2025.107177](https://doi.org/10.1016/j.compgeo.2025.107177)
 
 ---
 
+## 📜 License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
+
+## 📚 Third-Party Licenses
+
+GeoSyn depends on several third-party Python packages, including:
+
+- [GSTools](https://github.com/GeoStat-Framework/GSTools) (MIT License)
+
+These packages are subject to their own licenses, including MIT, BSD, PSF, and Apache 2.0 variants. While GeoSyn is released under the MIT License, you must ensure compliance with the licenses of any dependencies you use.
+
+For a full list of dependencies, see [`requirements.txt`](./requirements.txt).
+
+To review license information for installed packages, you can use:
+
+```bash
+pip install pip-licenses
+pip-licenses
+```
+
+---
+
+## 🔬 Research and Contributions
+
+This project is part of broader research into the application of generative adversarial networks in geotechnical engineering. For more information and to access the full thesis, please visit the [official thesis page](https://repository.tudelft.nl/islandora/object/uuid:c18cb6cf-3574-484d-aacc-dabd882341de?collection=education).
+
+---
