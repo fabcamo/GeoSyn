@@ -1,27 +1,45 @@
-# GeoSyn: Synthetic Database Generation for Geotechnical Cross-Sections
+# GeoSyn
 
-## Overview
-GeoSyn is a tool designed to generate a synthetic database of geotechnical cross-sections. This database aids in training a conditional Generative Adversarial Network (cGAN) capable of capturing complex relationships in subsurface schematisations, such as geometry in layer boundaries and anisotropy within each layer. The synthetic datasets are populated with Soil Behaviour Type index (Ic) values, derived from Cone Penetration Test (CPT) data, to facilitate geotechnical investigations.
+**GeoSyn** is an open-source Python tool for generating synthetic geotechnical 2D cross-sections. It was developed to support data-driven applications in geotechnical engineering by creating realistic and diverse training datasets for machine learning (ML) models.
 
-For a detailed explanation of the synthetic data generation process, please refer to the work of Campos-Montero et al. (2023).
+This tool allows users to define key subsurface parameters, including:
 
-**Keywords:** Deep learning, machine learning, generative adversarial network, geotechnical engineering, cross-sections, synthetic data, cone penetration test, soil behaviour type.
+- Number of layers  
+- Geometry of layer boundaries (via sine/cosine functions)  
+- Material categories and properties  
+- Spatial heterogeneity using anisotropic Gaussian random fields
 
-![Alt text](https://github.com/fabcamo/GeoSchemaGen/blob/main/tests/schemas.png?raw=true)
+Each synthetic cross-section can represent any scalar geotechnical property such as:
 
+- Soil type (e.g., sand, clay)  
+- Soil Behaviour Type Index (Ic)  
+- Permeability  
+- Undrained shear strength  
+- Any other scalar property expressible in 2D
 
+---
 
-## Installation
+## 🔍 Example Use Case
 
-To set up your environment to run GeoSchemaGen, please follow these steps:
+GeoSyn was used in the following peer-reviewed study to train a conditional Generative Adversarial Network (cGAN) that reconstructs geotechnical stratigraphy from sparse CPT data:
 
-1. Clone the repository to your local machine.
-2. Navigate to the cloned directory.
-3. Install the required dependencies using the following command:
+**Campos Montero, F.A., Zuada Coelho, B., Smyrniou, E., Taormina, R., & Vardon, P.J. (2025)**  
+*SchemaGAN: A conditional Generative Adversarial Network for geotechnical subsurface schematisation*  
+Computers and Geotechnics, 183, 107177  
+📄 [https://doi.org/10.1016/j.compgeo.2025.107177](https://doi.org/10.1016/j.compgeo.2025.107177)
 
-    ```bash
-    pip install -r requirements.txt
-    ```  
+---
+
+## 📦 Installation
+
+Clone the repository and install the required dependencies:
+
+```bash
+git clone https://github.com/fabcamo/GeoSyn.git
+cd GeoSyn
+pip install -r requirements.txt
+```
+
 
 ## Usage
 
@@ -47,6 +65,17 @@ These parameters can be adjusted within the `main.py` file.
 ## Output
 
 GeoSyn outputs geotechnical cross-sections in both PNG and CSV formats, formatted to a size of 32x512 pixels to maintain a 1:16 ratio for length over depth. This ensures computational efficiency and visual fidelity.
+
+## License
+This project is licensed under the MIT License. You are free to use, modify, and distribute this software under the terms of that license.
+
+## Third-party licenses
+GeoSyn uses the following third-party library:
+
+GSTools
+Repository: https://github.com/GeoStat-Framework/GSTools
+
+License: MIT License
 
 ## Research and Contributions
 
