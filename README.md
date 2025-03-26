@@ -1,7 +1,7 @@
-# GeoSchemaGen: Synthetic Database Generation for Geotechnical Cross-Sections
+# GeoSyn: Synthetic Database Generation for Geotechnical Cross-Sections
 
 ## Overview
-GeoSchemaGen is a tool designed to generate a synthetic database of geotechnical cross-sections. This database aids in training a conditional Generative Adversarial Network (cGAN) capable of capturing complex relationships in subsurface schematisations, such as geometry in layer boundaries and anisotropy within each layer. The synthetic datasets are populated with Soil Behaviour Type index (Ic) values, derived from Cone Penetration Test (CPT) data, to facilitate geotechnical investigations.
+GeoSyn is a tool designed to generate a synthetic database of geotechnical cross-sections. This database aids in training a conditional Generative Adversarial Network (cGAN) capable of capturing complex relationships in subsurface schematisations, such as geometry in layer boundaries and anisotropy within each layer. The synthetic datasets are populated with Soil Behaviour Type index (Ic) values, derived from Cone Penetration Test (CPT) data, to facilitate geotechnical investigations.
 
 For a detailed explanation of the synthetic data generation process, please refer to the work of Campos-Montero et al. (2023).
 
@@ -46,7 +46,7 @@ These parameters can be adjusted within the `main.py` file.
 
 ## Output
 
-GeoSchemaGen outputs geotechnical cross-sections in both PNG and CSV formats, formatted to a size of 32x512 pixels to maintain a 1:16 ratio for length over depth. This ensures computational efficiency and visual fidelity.
+GeoSyn outputs geotechnical cross-sections in both PNG and CSV formats, formatted to a size of 32x512 pixels to maintain a 1:16 ratio for length over depth. This ensures computational efficiency and visual fidelity.
 
 ## Research and Contributions
 
