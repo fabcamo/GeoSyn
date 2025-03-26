@@ -105,8 +105,3 @@ pip-licenses
 
 ---
 
-## 🔬 Research and Contributions
-
-This project is part of broader research into the application of generative adversarial networks in geotechnical engineering. For more information and to access the full thesis, please visit the [official thesis page](https://repository.tudelft.nl/islandora/object/uuid:c18cb6cf-3574-484d-aacc-dabd882341de?collection=education).
-
----
