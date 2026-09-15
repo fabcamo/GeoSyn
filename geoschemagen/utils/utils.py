@@ -5,7 +5,7 @@ import numpy as np
 
 
 def split_data(data_path: str, train_folder: str, validation_folder: str, test_folder: str,
-               vali_ratio: float = 0.1666666, test_ratio: float = 0.1666666, shuffle: bool = True):
+               vali_ratio: float = 0.1666666, test_ratio: float = 0.1666666, shuffle: bool = True, seed: int = 14):
     """
     Split data into train, validation, and test sets.
 
@@ -17,9 +17,13 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         vali_ratio (float, optional): Ratio of data for training (default is 0.1666666).
         test_ratio (float, optional): Ratio of data for testing (default is 0.1666666).
         shuffle (bool, optional): Whether to shuffle the data indices (default is True).
-    Return:
+        seed (int, optional): Seed for the random number generator (default is 14).
+    Returns:
         None
     """
+
+    # Set the seed for NumPy's random number generator
+    np.random.seed(seed)
 
     # Create directories if they don't exist
     if not os.path.isdir(train_folder):
@@ -29,8 +33,9 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
     if not os.path.isdir(test_folder):
         os.makedirs(test_folder)
 
-    # Get list of CSV files in data_path
-    csv_files = [f for f in os.listdir(data_path) if f.endswith(".csv")]
+    # Get list of CSV files in data_path (sorted for a deterministic index-to-file mapping,
+    # since os.listdir() order is filesystem/OS-dependent and not reproducible across machines)
+    csv_files = sorted(f for f in os.listdir(data_path) if f.endswith(".csv"))
 
     # Calculate the number of files for each set
     nb_files = len(csv_files)
@@ -119,7 +124,6 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
     # # shutil.rmtree(destination_folder)
 
 
-
 def move_matching_files(source_folder, destination_folder):
     # Extract file numbers from source folder
     file_numbers = []
@@ -138,7 +142,6 @@ def move_matching_files(source_folder, destination_folder):
             source_file_path = os.path.join(destination_folder, filename)
             destination_file_path = os.path.join(source_folder, filename)
             shutil.move(source_file_path, destination_file_path)
-
 
 
 def save_summary(output_folder: str, time_start: float, time_end: float, seed: int, no_realizations: int):
