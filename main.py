@@ -44,6 +44,7 @@ create_cptlike = True       # On or off: create CPT-like images
 save_image = True           # On or off: save the images
 save_cptlike_image = True  # On or off: save the cpt-like images
 save_csv = True            # On or off: save the csv files
+save_h5 = True              # On or off: save the h5 files
 
 seed = 14  # Define a seed for the random number generator
 vali_ratio = 0.15   # Percentage of total data for validation
@@ -74,7 +75,8 @@ if __name__ == "__main__":
                           create_cptlike=create_cptlike,
                           save_image=save_image,
                           save_cptlike_image=save_cptlike_image,
-                          save_csv=save_csv)
+                          save_csv=save_csv,
+                          save_h5=save_h5)
 
         validation_folder = os.path.join(model_output_folder, "validation")
         test_folder = os.path.join(model_output_folder, "test")

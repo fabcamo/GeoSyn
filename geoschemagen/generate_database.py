@@ -16,6 +16,7 @@ def generate_database(output_folder: str,
                       save_image:bool = False,
                       save_cptlike_image:bool = False,
                       save_csv:bool = False,
+                      save_h5:bool = True,
                       config_path:str = None):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
@@ -31,6 +32,7 @@ def generate_database(output_folder: str,
         create_cptlike (bool): Whether to create CPT-like images. Default is False.
         save_image (bool): Whether to save the images. Default is False.
         save_csv (bool): Whether to save the CSV files. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) files. Default is True.
         config_path (str): Path to a JSON file overriding the selected model_type's boundary
             parameters (amplitude, period, phase_shift, vertical_shift, etc.). Defaults to
             geoschemagen/config/model_params.json.
@@ -63,6 +65,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "B":
@@ -79,6 +82,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "C":
@@ -94,6 +98,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "D":
@@ -109,6 +114,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "E":
@@ -124,6 +130,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "F":
@@ -137,6 +144,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             elif model_type == "S":
@@ -153,6 +161,7 @@ def generate_database(output_folder: str,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
                                     save_csv=save_csv,
+                                    save_h5=save_h5,
                                     config_path=config_path)
 
             else:

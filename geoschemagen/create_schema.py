@@ -603,6 +603,7 @@ def create_schema_typeA(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
@@ -619,6 +620,7 @@ def create_schema_typeA(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -717,23 +719,24 @@ def create_schema_typeA(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeA_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "A"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        #TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "A"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            #TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -780,6 +783,7 @@ def create_schema_typeB(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -800,6 +804,7 @@ def create_schema_typeB(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -909,23 +914,24 @@ def create_schema_typeB(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeB_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "B"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        #TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic transition area with subhorizontal layers and complex indentations with the pleistocene sand as base layer at 30 m depth. Intercalations of sandy and clayey materials, as well as organic clays and peat. Complex layering."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "B"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            #TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Deltaic transition area with subhorizontal layers and complex indentations with the pleistocene sand as base layer at 30 m depth. Intercalations of sandy and clayey materials, as well as organic clays and peat. Complex layering."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -972,6 +978,7 @@ def create_schema_typeC(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -992,6 +999,7 @@ def create_schema_typeC(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -1091,23 +1099,24 @@ def create_schema_typeC(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeC_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "C"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Floodplain deposits consisting of predominantly silty clay with occasional sand or clay lenses that cut through subhorizontal bedding. These lenses represent higher-energy flood events, while the overall unit reflects the low-energy, fluctuating conditions typical of a floodplain environment."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "C"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            # TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Floodplain deposits consisting of predominantly silty clay with occasional sand or clay lenses that cut through subhorizontal bedding. These lenses represent higher-energy flood events, while the overall unit reflects the low-energy, fluctuating conditions typical of a floodplain environment."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -1154,6 +1163,7 @@ def create_schema_typeD(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -1174,6 +1184,7 @@ def create_schema_typeD(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -1287,23 +1298,24 @@ def create_schema_typeD(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeD_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "D"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Intercalated layers of sand and clay from transitional delta deposits, with sand showing occasional ripple marks and clay forming thin, laminated beds. The unit has gradational contacts, reflecting alternating deposition from varying energy conditions in a deltaic environment."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "D"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            # TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Intercalated layers of sand and clay from transitional delta deposits, with sand showing occasional ripple marks and clay forming thin, laminated beds. The unit has gradational contacts, reflecting alternating deposition from varying energy conditions in a deltaic environment."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -1350,6 +1362,7 @@ def create_schema_typeE(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -1371,6 +1384,7 @@ def create_schema_typeE(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -1484,23 +1498,24 @@ def create_schema_typeE(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeE_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "E"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Steeply dipping layers of fine to coarse sand interbedded with silty clay, characteristic of deltaic foreset deposits. The unit shows inclined bedding, reflecting sediment deposition on a prograding delta front, with occasional grading and cross-lamination indicating fluctuating flow conditions."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "E"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            # TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Steeply dipping layers of fine to coarse sand interbedded with silty clay, characteristic of deltaic foreset deposits. The unit shows inclined bedding, reflecting sediment deposition on a prograding delta front, with occasional grading and cross-lamination indicating fluctuating flow conditions."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -1546,6 +1561,7 @@ def create_schema_typeF(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -1566,6 +1582,7 @@ def create_schema_typeF(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with boundary parameter overrides for this model
             type. Defaults to geoschemagen/config/model_params.json.
 
@@ -1671,23 +1688,24 @@ def create_schema_typeF(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeF_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "F"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Heterogeneous unit with fine to coarse sand showing cross-bedding, interspersed with clay and silt lenses. The deposit features irregular geometries, including channel-shaped indentations and lateral accretion surfaces, reflecting deposition in a meandering river system with variable flow conditions."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "F"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            # TODO: Add a description that makes sense for the model
+            f.attrs["description"] = "Heterogeneous unit with fine to coarse sand showing cross-bedding, interspersed with clay and silt lenses. The deposit features irregular geometries, including channel-shaped indentations and lateral accretion surfaces, reflecting deposition in a meandering river system with variable flow conditions."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
@@ -1733,6 +1751,7 @@ def create_schema_typeS(output_folder: str,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
+                        save_h5: bool = True,
                         config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -1753,6 +1772,7 @@ def create_schema_typeS(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with amplitude/period/phase_shift/vertical_shift
             overrides for the boundaries. Defaults to geoschemagen/config/model_params.json.
 
@@ -1836,22 +1856,23 @@ def create_schema_typeS(output_folder: str,
     # Save to HDF5
     h5_filename = f"typeS_{counter + 1}.h5"
     h5_path = os.path.join(output_folder, h5_filename)
-    with h5py.File(h5_path, "w") as f:
-        # Save the 2D array (image matrix) as a dataset
-        # Make sure to save the matrix with the correct orientation
-        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
-        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+    if save_h5:
+        with h5py.File(h5_path, "w") as f:
+            # Save the 2D array (image matrix) as a dataset
+            # Make sure to save the matrix with the correct orientation
+            f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+            f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
 
-        # Save metadata as attributes
-        f.attrs["model_type"] = "S"
-        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
-        f.attrs["description"] = "Legacy schemaGAN model: 5 layers separated by unrestricted sine/cosine boundaries, filled from a shuffled pool of 7 anisotropic random fields, stacked in random order."
-        f.attrs["date"] = str(datetime.datetime.now())
-        f.attrs["seed"] = seed
-        f.attrs["randomfield"] = RF
-        f.attrs["materials"] = materials_list
+            # Save metadata as attributes
+            f.attrs["model_type"] = "S"
+            f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+            f.attrs["description"] = "Legacy schemaGAN model: 5 layers separated by unrestricted sine/cosine boundaries, filled from a shuffled pool of 7 anisotropic random fields, stacked in random order."
+            f.attrs["date"] = str(datetime.datetime.now())
+            f.attrs["seed"] = seed
+            f.attrs["randomfield"] = RF
+            f.attrs["materials"] = materials_list
 
-    print(f"Data saved as {h5_filename}")
+        print(f"Data saved as {h5_filename}")
 
     # Optionally, save the image as a PNG file
     if save_image:
