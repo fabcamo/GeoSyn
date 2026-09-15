@@ -5,7 +5,7 @@ from geoschemagen.generate_database import generate_database
 import pytest
 
 
-@pytest.mark.parametrize("model_type", ["S", "A", "B", "C", "D", "E", "F"])
+@pytest.mark.parametrize("model_type", ["A", "B", "C", "D", "E", "F", "S"])
 def test_generation_images(model_type):
     """
     Test the generation of images and CSV files for different model types.
