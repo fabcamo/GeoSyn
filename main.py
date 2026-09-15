@@ -1,15 +1,18 @@
 import os
 import time
 import numpy as np
-from utils.utils import split_data, save_summary
+from geoschemagen.utils.utils import split_data, save_summary
 from geoschemagen.generate_database import generate_database
-from utils.create_cptlike import from_schema_to_cptlike
+from geoschemagen.utils.create_cptlike import from_schema_to_cptlike
 
 """
 MAIN SCRIPT TO GENERATE A GEOTECHNICAL SCHEMATISATION DATABASE
 
+This script runs all model types sequentially (A, B, C, D, E, F) with 5000 realizations each
+and saves the outputs in separate folders.
+
 The user needs to input:
-    - output_folder: the folder to save the synthetic data
+    - output_base_folder: the folder to save the synthetic data
     - no_realizations: the number of realizations to generate (with or without RF)
     - x_max: the length of the model
     - z_max: the depth of the model
@@ -27,28 +30,13 @@ The user needs to input:
     - "F": Irregular sinuosoidal layers
 """
 
-
-
-import os
-import time
-import numpy as np
-from utils.utils import split_data, save_summary
-from geoschemagen.generate_database import generate_database
-from utils.create_cptlike import from_schema_to_cptlike
-
-"""
-MODIFIED SCRIPT TO GENERATE A GEOTECHNICAL SCHEMATISATION DATABASE FOR ALL MODEL TYPES
-
-This script runs all model types sequentially (A, B, C, D, E, F) with 5000 realizations each
-and saves the outputs in separate folders.
-"""
-
 # USER DEFINED PARAMETERS
 no_realizations = 5000    # Number of realizations to generate
-output_base_folder = r'D:\GeoSchemaGen\tests'  # Base folder to save outputs
+output_base_folder = r'tests'  # Base folder to save outputs
 
 x_max = 512     # Length (x) of the model
 z_max = 32      # Depth (z) of the model
+
 
 use_RF = True               # On or off: use Random Fields
 create_cptlike = True       # On or off: create CPT-like images

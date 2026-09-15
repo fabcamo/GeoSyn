@@ -1,5 +1,5 @@
 import numpy as np
-from utils.distributions import pert
+from geoschemagen.utils.distributions import pert
 
 def layer_boundary(x_coord: np.array, z_max:float):
     """

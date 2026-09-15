@@ -1,7 +1,10 @@
 env/
 /tests/outputs/
 /venv/
+.build
+.vscode/
 __pycache__/
+.egg-info/
 .idea/
 tests/BCS/
 tests/cs_20241216/
