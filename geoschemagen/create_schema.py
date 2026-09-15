@@ -8,6 +8,7 @@ from geoschemagen.create_rfs import generate_rf_group, generate_rf_group_legacy
 from geoschemagen.create_layer_boundaries import layer_boundary, layer_boundary_horizA, layer_boundary_irregular
 from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
 from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
+from geoschemagen.utils.model_config import load_model_params
 
 
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
@@ -601,7 +602,8 @@ def create_schema_typeA(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
 
@@ -617,6 +619,8 @@ def create_schema_typeA(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -632,10 +636,13 @@ def create_schema_typeA(output_folder: str,
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
+    # Load the tunable boundary parameters for this model type
+    boundary_params = load_model_params("A", config_path).get("horizA")
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_horizA(x_coord, z_max, trigo_type)
-    y2 = layer_boundary_horizA(x_coord, z_max, trigo_type)
-    y3 = layer_boundary_horizA(x_coord, z_max, trigo_type)
+    y1 = layer_boundary_horizA(x_coord, z_max, trigo_type, boundary_params)
+    y2 = layer_boundary_horizA(x_coord, z_max, trigo_type, boundary_params)
+    y3 = layer_boundary_horizA(x_coord, z_max, trigo_type, boundary_params)
     boundaries = [y1, y2, y3]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -762,7 +769,6 @@ def create_schema_typeA(output_folder: str,
         print(f"Image saved as {fig_path}")
 
 
-
 def create_schema_typeB(output_folder: str,
                         counter: int,
                         z_max: int,
@@ -773,7 +779,8 @@ def create_schema_typeB(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type B:
@@ -793,6 +800,8 @@ def create_schema_typeB(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -808,12 +817,17 @@ def create_schema_typeB(output_folder: str,
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
+    # Load the tunable boundary parameters for this model type
+    type_b_params = load_model_params("B", config_path)
+    boundary_params = type_b_params.get("subhorizD_vert")
+    bands = type_b_params.get("bands", [[0, 3], [4, 6], [9, 11], [14, 15], [17, 21]])
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 0, 3)
-    y2 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 4, 6)
-    y3 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 9, 11)
-    y4 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 14, 15)
-    y5 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 17, 21)
+    y1 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[0][0], bands[0][1], boundary_params)
+    y2 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[1][0], bands[1][1], boundary_params)
+    y3 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[2][0], bands[2][1], boundary_params)
+    y4 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[3][0], bands[3][1], boundary_params)
+    y5 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[4][0], bands[4][1], boundary_params)
     boundaries = [y1, y2, y3, y4, y5]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -957,7 +971,8 @@ def create_schema_typeC(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type C:
@@ -977,6 +992,8 @@ def create_schema_typeC(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -992,10 +1009,13 @@ def create_schema_typeC(output_folder: str,
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
+    # Load the tunable boundary parameters for this model type
+    type_c_params = load_model_params("C", config_path)
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_lensC(x_coord, z_max, trigo_type)
-    y2 = layer_boundary_subhorizB(x_coord, z_max, trigo_type)
-    y3 = layer_boundary_subhorizB(x_coord, z_max, trigo_type)
+    y1 = layer_boundary_lensC(x_coord, z_max, trigo_type, type_c_params.get("lensC"))
+    y2 = layer_boundary_subhorizB(x_coord, z_max, trigo_type, type_c_params.get("subhorizB"))
+    y3 = layer_boundary_subhorizB(x_coord, z_max, trigo_type, type_c_params.get("subhorizB"))
     boundaries = [y1, y2, y3]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -1133,7 +1153,8 @@ def create_schema_typeD(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type D:
@@ -1153,6 +1174,8 @@ def create_schema_typeD(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -1167,13 +1190,18 @@ def create_schema_typeD(output_folder: str,
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
+    # Load the tunable boundary parameters for this model type
+    type_d_params = load_model_params("D", config_path)
+    boundary_params = type_d_params.get("subhorizD_vert")
+    bands = type_d_params.get("bands", [[0, 2], [4, 6], [9, 11], [14, 15], [17, 21], [20, 29]])
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 0, 2)
-    y2 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 4, 6)
-    y3 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 9, 11)
-    y4 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 14, 15)
-    y5 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 17, 21)
-    y6 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, 20, 29)
+    y1 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[0][0], bands[0][1], boundary_params)
+    y2 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[1][0], bands[1][1], boundary_params)
+    y3 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[2][0], bands[2][1], boundary_params)
+    y4 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[3][0], bands[3][1], boundary_params)
+    y5 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[4][0], bands[4][1], boundary_params)
+    y6 = layer_boundary_subhorizD_vert(x_coord, z_max, trigo_type, bands[5][0], bands[5][1], boundary_params)
     boundaries = [y1, y2, y3, y4, y5, y6]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -1321,7 +1349,8 @@ def create_schema_typeE(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -1342,6 +1371,8 @@ def create_schema_typeE(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -1363,11 +1394,14 @@ def create_schema_typeE(output_folder: str,
     else:
         trigo_type = np.random.choice([1, 2])
 
+    # Load the tunable boundary parameters for this model type
+    boundary_params = load_model_params("E", config_path)
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_irregularE(x_coord, z_max, trigo_type)
-    y2 = layer_boundary_irregularE(x_coord, z_max, trigo_type)
-    y3 = layer_boundary_irregularE(x_coord, z_max, trigo_type)
-    y4 = layer_boundary_irregularE(x_coord, z_max, trigo_type)
+    y1 = layer_boundary_irregularE(x_coord, z_max, trigo_type, boundary_params)
+    y2 = layer_boundary_irregularE(x_coord, z_max, trigo_type, boundary_params)
+    y3 = layer_boundary_irregularE(x_coord, z_max, trigo_type, boundary_params)
+    y4 = layer_boundary_irregularE(x_coord, z_max, trigo_type, boundary_params)
     boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -1511,7 +1545,8 @@ def create_schema_typeF(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -1531,6 +1566,8 @@ def create_schema_typeF(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model
+            type. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -1547,11 +1584,14 @@ def create_schema_typeF(output_folder: str,
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
 
+    # Load the tunable boundary parameters for this model type
+    boundary_params = load_model_params("F", config_path).get("irregular")
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary_irregular(x_coord, z_max)
-    y2 = layer_boundary_irregular(x_coord, z_max)
-    y3 = layer_boundary_irregular(x_coord, z_max)
-    y4 = layer_boundary_irregular(x_coord, z_max)
+    y1 = layer_boundary_irregular(x_coord, z_max, boundary_params)
+    y2 = layer_boundary_irregular(x_coord, z_max, boundary_params)
+    y3 = layer_boundary_irregular(x_coord, z_max, boundary_params)
+    y4 = layer_boundary_irregular(x_coord, z_max, boundary_params)
     boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
@@ -1692,7 +1732,8 @@ def create_schema_typeS(output_folder: str,
                         create_cptlike: bool = False,
                         save_image: bool = False,
                         save_cptlike_image: bool = False,
-                        save_csv: bool = False) -> None:
+                        save_csv: bool = False,
+                        config_path: str = None) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type S (Legacy / schemaGAN):
@@ -1712,6 +1753,8 @@ def create_schema_typeS(output_folder: str,
         save_image (bool): Whether to save the PNG image. Default is False.
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
+        config_path (str): Path to a JSON file with amplitude/period/phase_shift/vertical_shift
+            overrides for the boundaries. Defaults to geoschemagen/config/model_params.json.
 
     Returns:
         None
@@ -1727,11 +1770,14 @@ def create_schema_typeS(output_folder: str,
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
+    # Load the tunable boundary parameters (amplitude, period, phase_shift, vertical_shift)
+    boundary_params = load_model_params("S", config_path)
+
     # Generate new y value for each plot and sort them to avoid stacking
-    y1 = layer_boundary(x_coord, z_max)
-    y2 = layer_boundary(x_coord, z_max)
-    y3 = layer_boundary(x_coord, z_max)
-    y4 = layer_boundary(x_coord, z_max)
+    y1 = layer_boundary(x_coord, z_max, boundary_params)
+    y2 = layer_boundary(x_coord, z_max, boundary_params)
+    y3 = layer_boundary(x_coord, z_max, boundary_params)
+    y4 = layer_boundary(x_coord, z_max, boundary_params)
     boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 

@@ -15,7 +15,8 @@ def generate_database(output_folder: str,
                       create_cptlike:bool = False,
                       save_image:bool = False,
                       save_cptlike_image:bool = False,
-                      save_csv:bool = False):
+                      save_csv:bool = False,
+                      config_path:str = None):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
 
@@ -30,6 +31,9 @@ def generate_database(output_folder: str,
         create_cptlike (bool): Whether to create CPT-like images. Default is False.
         save_image (bool): Whether to save the images. Default is False.
         save_csv (bool): Whether to save the CSV files. Default is False.
+        config_path (str): Path to a JSON file overriding the selected model_type's boundary
+            parameters (amplitude, period, phase_shift, vertical_shift, etc.). Defaults to
+            geoschemagen/config/model_params.json.
 
     Return:
         None
@@ -58,7 +62,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "B":
                 # Mix of both sine and cosine in the same model
@@ -73,7 +78,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "C":
                 combine_trigo = 0
@@ -87,7 +93,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "D":
                 combine_trigo = 0
@@ -101,7 +108,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "E":
                 combine_trigo = False
@@ -115,7 +123,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "F":
                 create_schema_typeF(output_folder=output_folder,
@@ -127,10 +136,13 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             elif model_type == "S":
-                # Original simple model: 5 layers, unrestricted sine/cosine boundaries, random order
+                # Legacy schemaGAN model: 5 layers, unrestricted sine/cosine boundaries, random order
+                # Boundary parameters (amplitude, period, phase_shift, vertical_shift) are read from
+                # geoschemagen/config/model_params.json (or config_path, if given)
                 create_schema_typeS(output_folder=output_folder,
                                     counter=counter,
                                     z_max=z_max,
@@ -140,7 +152,8 @@ def generate_database(output_folder: str,
                                     create_cptlike=create_cptlike,
                                     save_image=save_image,
                                     save_cptlike_image=save_cptlike_image,
-                                    save_csv=save_csv)
+                                    save_csv=save_csv,
+                                    config_path=config_path)
 
             else:
                 print("Model type selected not supported")
