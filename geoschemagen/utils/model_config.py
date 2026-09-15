@@ -1,23 +1,18 @@
-import os
 import json
 
-# Bundled defaults with tunable boundary parameters for every model type (A-F, S)
-DEFAULT_MODEL_CONFIG = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config", "model_params.json")
 
-
-def load_model_params(model_type: str, config_path: str = None) -> dict:
+def load_model_params(model_type: str, config_path: str) -> dict:
     """
     Load the tunable boundary parameters for a given model type from a JSON file.
 
     Args:
         model_type (str): The model type/letter to load parameters for (e.g. "A", "B", ..., "S").
-        config_path (str): Path to the JSON config file. Defaults to the bundled model_params.json.
+        config_path (str): Path to the JSON config file.
     Returns:
         dict: The parsed parameters for the requested model type. Empty dict if the type
             has no entry in the config file (callers fall back to hardcoded defaults in that case).
     """
-    path = config_path or DEFAULT_MODEL_CONFIG
-    with open(path, "r") as f:
+    with open(config_path, "r") as f:
         all_params = json.load(f)
     return all_params.get(model_type, {})
 

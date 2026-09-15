@@ -1,8 +1,11 @@
+import os
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
     create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, \
     create_schema_typeE, create_schema_typeF, create_schema_typeS
 
+# Bundled defaults with tunable boundary parameters for every model type (A-F, S)
+DEFAULT_MODEL_CONFIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "model_params.json")
 
 
 def generate_database(output_folder: str,
@@ -17,7 +20,7 @@ def generate_database(output_folder: str,
                       save_cptlike_image:bool = False,
                       save_csv:bool = False,
                       save_h5:bool = True,
-                      config_path:str = None):
+                      config_path:str = DEFAULT_MODEL_CONFIG):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
 

@@ -604,7 +604,8 @@ def create_schema_typeA(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters, save results in an HDF5 file, and optionally save the image.
 
@@ -621,8 +622,7 @@ def create_schema_typeA(output_folder: str,
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -784,7 +784,8 @@ def create_schema_typeB(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type B:
@@ -805,8 +806,7 @@ def create_schema_typeB(output_folder: str,
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -979,7 +979,8 @@ def create_schema_typeC(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type C:
@@ -1000,8 +1001,7 @@ def create_schema_typeC(output_folder: str,
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -1164,7 +1164,8 @@ def create_schema_typeD(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type D:
@@ -1185,8 +1186,7 @@ def create_schema_typeD(output_folder: str,
         save_cptlike_image
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -1363,7 +1363,8 @@ def create_schema_typeE(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -1385,8 +1386,7 @@ def create_schema_typeE(output_folder: str,
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -1562,7 +1562,8 @@ def create_schema_typeF(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type A:
@@ -1583,8 +1584,7 @@ def create_schema_typeF(output_folder: str,
         save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
-        config_path (str): Path to a JSON file with boundary parameter overrides for this model
-            type. Defaults to geoschemagen/config/model_params.json.
+        config_path (str): Path to a JSON file with boundary parameter overrides for this model type.
 
     Returns:
         None
@@ -1752,7 +1752,8 @@ def create_schema_typeS(output_folder: str,
                         save_cptlike_image: bool = False,
                         save_csv: bool = False,
                         save_h5: bool = True,
-                        config_path: str = None) -> None:
+                        *,
+                        config_path: str) -> None:
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
     Type S (Legacy / schemaGAN):
@@ -1774,7 +1775,7 @@ def create_schema_typeS(output_folder: str,
         save_csv (bool): Whether to save the CSV file. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) file. Default is True.
         config_path (str): Path to a JSON file with amplitude/period/phase_shift/vertical_shift
-            overrides for the boundaries. Defaults to geoschemagen/config/model_params.json.
+            overrides for the boundaries.
 
     Returns:
         None
