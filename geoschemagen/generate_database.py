@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
     create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, \
@@ -45,6 +46,7 @@ def generate_database(output_folder: str,
     """
     # Set the seed for NumPy's random number generator
     np.random.seed(seed)
+    random.seed(seed)
 
     # Start the counter
     counter = 0
