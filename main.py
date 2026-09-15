@@ -1,9 +1,9 @@
 import os
 import time
 import numpy as np
-from utils.utils import split_data, save_summary
+from geoschemagen.utils.utils import split_data, save_summary
 from geoschemagen.generate_database import generate_database
-from utils.create_cptlike import from_schema_to_cptlike
+from geoschemagen.utils.create_cptlike import from_schema_to_cptlike
 
 """
 MAIN SCRIPT TO GENERATE A GEOTECHNICAL SCHEMATISATION DATABASE
@@ -31,7 +31,7 @@ The user needs to input:
 model_type = "B"
 no_realizations = 20    # Number of realizations to generate
 # Output folder
-output_folder = r'D:\GeoSchemaGen\tests'
+output_folder = r'tests'
 
 x_max = 512     # Length (x) of the model
 z_max = 32      # Depth (z) of the model
