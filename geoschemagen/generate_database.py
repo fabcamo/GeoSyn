@@ -1,7 +1,7 @@
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
     create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, \
-    create_schema_typeE, create_schema_typeF
+    create_schema_typeE, create_schema_typeF, create_schema_typeS
 
 
 
@@ -119,6 +119,19 @@ def generate_database(output_folder: str,
 
             elif model_type == "F":
                 create_schema_typeF(output_folder=output_folder,
+                                    counter=counter,
+                                    z_max=z_max,
+                                    x_max=x_max,
+                                    seed=seed,
+                                    RF=use_RF,
+                                    create_cptlike=create_cptlike,
+                                    save_image=save_image,
+                                    save_cptlike_image=save_cptlike_image,
+                                    save_csv=save_csv)
+
+            elif model_type == "S":
+                # Original simple model: 5 layers, unrestricted sine/cosine boundaries, random order
+                create_schema_typeS(output_folder=output_folder,
                                     counter=counter,
                                     z_max=z_max,
                                     x_max=x_max,

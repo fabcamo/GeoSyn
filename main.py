@@ -28,6 +28,7 @@ The user needs to input:
     - "D": Horizontal layers with intercalations sand and clay, up to 7 layers, fixed bottom not always present.
     - "E": Inclined layers
     - "F": Irregular sinuosoidal layers
+    - "S": Legacy schemaGAN model, 5 layers with unrestricted sine/cosine boundaries, random order.
 """
 
 # USER DEFINED PARAMETERS
@@ -49,7 +50,7 @@ vali_ratio = 0.15   # Percentage of total data for validation
 test_ratio = 0.15   # Percentage of total data for testing
 
 # Define the model types
-model_types = ["A"]
+model_types = ["S"]
 
 if __name__ == "__main__":
     # Start the overall timer

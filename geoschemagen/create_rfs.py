@@ -55,6 +55,28 @@ def generate_rf_group(seed: int):
 
 
 
+def generate_rf_group_legacy(seed: int):
+    """
+    Generate the pool of 7 random field models used by the original schemaGAN database generator.
+
+    Args:
+        seed (int): Random seed.
+    Returns:
+        list: List of tuples containing generated random field models and their material names.
+    """
+    layers = [
+        (rf_generator(*soil_behaviour_clay(), seed + 1), "clay"),
+        (rf_generator(*soil_behaviour_siltmix(), seed + 2), "siltmix"),
+        (rf_generator(*soil_behaviour_sandmix(), seed + 3), "sandmix"),
+        (rf_generator(*soil_behaviour_sand(), seed + 4), "sand"),
+        (rf_generator(*soil_behaviour_organic(), seed + 5), "organic"),
+        (rf_generator(*soil_behaviour_clay(), seed + 6), "clay"),
+        (rf_generator(*soil_behaviour_sand(), seed + 7), "sand"),
+    ]
+    return layers
+
+
+
 def generate_rf_group_OLD(seed: int):
     """
     Generate random field models for different materials.

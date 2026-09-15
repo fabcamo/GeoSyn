@@ -4,7 +4,7 @@ import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from geoschemagen.create_rfs import generate_rf_group
+from geoschemagen.create_rfs import generate_rf_group, generate_rf_group_legacy
 from geoschemagen.create_layer_boundaries import layer_boundary, layer_boundary_horizA, layer_boundary_irregular
 from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
 from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
@@ -1642,6 +1642,164 @@ def create_schema_typeF(output_folder: str,
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
         f.attrs["description"] = "Heterogeneous unit with fine to coarse sand showing cross-bedding, interspersed with clay and silt lenses. The deposit features irregular geometries, including channel-shaped indentations and lateral accretion surfaces, reflecting deposition in a meandering river system with variable flow conditions."
+        f.attrs["date"] = str(datetime.datetime.now())
+        f.attrs["seed"] = seed
+        f.attrs["randomfield"] = RF
+        f.attrs["materials"] = materials_list
+
+    print(f"Data saved as {h5_filename}")
+
+    # Optionally, save the image as a PNG file
+    if save_image:
+        plt.clf()  # Clear the current figure
+        df_pivot = df.pivot(index="z", columns="x", values="IC")
+        fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
+        ax.set_position([0, 0, 1, 1])
+        ax.imshow(df_pivot, interpolation='none', aspect='auto')
+        plt.axis("off")
+
+        fig_path = os.path.join(output_folder, f"{h5_filename.replace('.h5', '.png')}")
+        plt.savefig(fig_path)
+        plt.close()
+        print(f"Image saved as {fig_path}")
+
+    # Optionally, save the CSV file
+    if save_csv:
+        csv_path = os.path.join(output_folder, f"{h5_filename.replace('.h5', '.csv')}")
+        df.to_csv(csv_path, index=False)
+        print(f"CSV saved as {csv_path}")
+
+    # Optionally, save the CPTlike image as a PNG file
+    if save_cptlike_image:
+        plt.clf()  # Clear the current figure
+        fig, ax = plt.subplots(figsize=(x_max / 100, z_max / 100))
+        ax.set_position([0, 0, 1, 1])
+        ax.imshow(cpt_like_image, interpolation='none', aspect='auto')
+        plt.axis("off")
+
+        fig_path = os.path.join(output_folder, f"cptlike_{h5_filename.replace('.h5', '.png')}")
+        plt.savefig(fig_path)
+        plt.close()
+        print(f"Image saved as {fig_path}")
+
+
+def create_schema_typeS(output_folder: str,
+                        counter: int,
+                        z_max: int,
+                        x_max: int,
+                        seed: int,
+                        RF: bool = True,
+                        create_cptlike: bool = False,
+                        save_image: bool = False,
+                        save_cptlike_image: bool = False,
+                        save_csv: bool = False) -> None:
+    """
+    Generate synthetic data with given parameters and save results in the specified output folder.
+    Type S (Legacy / schemaGAN):
+    - Faithful recreation of the original schemaGAN database generator.
+    - 5 layers, no fixed top or bottom, split by 4 unrestricted sine/cosine boundaries.
+    - Filled from a shuffled pool of 7 anisotropic random fields (clay, siltmix, sandmix,
+      sand, organic, clay, sand), matching the legacy generate_rf_group.
+
+    Args:
+        output_folder (str): The folder to save the synthetic data.
+        counter (int): Current realization number.
+        z_max (int): Depth of the model.
+        x_max (int): Length of the model.
+        seed (int): Seed for random number generation.
+        RF (bool): Whether to use Random Fields. Default is True.
+        create_cptlike (bool): Whether to create the CPT-like data. Default is False.
+        save_image (bool): Whether to save the PNG image. Default is False.
+        save_cptlike_image (bool): Whether to save the CPT-like PNG image. Default is False.
+        save_csv (bool): Whether to save the CSV file. Default is False.
+
+    Returns:
+        None
+    """
+
+    # Define the geometry for the synthetic data generation
+    x_coord = np.arange(0, x_max, 1)  # Array of x coordinates
+    z_coord = np.arange(0, z_max, 1)  # Array of z coordinates
+    xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
+
+    # Set up the matrix geometry
+    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
+    coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
+    values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
+
+    # Generate new y value for each plot and sort them to avoid stacking
+    y1 = layer_boundary(x_coord, z_max)
+    y2 = layer_boundary(x_coord, z_max)
+    y3 = layer_boundary(x_coord, z_max)
+    y4 = layer_boundary(x_coord, z_max)
+    boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
+    boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
+
+    # Create containers for each layer
+    area_1, area_2, area_3, area_4, area_5 = [], [], [], [], []
+
+    # Assign grid cells to each layer based on the boundaries
+    for row in range(matrix.shape[0]):
+        for col in range(matrix.shape[1]):
+            if row <= boundaries[0][col]:
+                area_1.append([col, row])
+            elif row <= boundaries[1][col]:
+                area_2.append([col, row])
+            elif row <= boundaries[2][col]:
+                area_3.append([col, row])
+            elif row <= boundaries[3][col]:
+                area_4.append([col, row])
+            else:
+                area_5.append([col, row])
+
+    all_layers = [area_1, area_2, area_3, area_4, area_5]
+
+    # Fill the layers with the corresponding values
+    if RF:
+        # Generate the legacy pool of 7 random field models and shuffle them
+        layers_with_names = generate_rf_group_legacy(seed)
+        np.random.shuffle(layers_with_names)
+
+        materials_list = []  # Create a list to store the materials used in each layer
+        # Apply the random field models to the layers
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            layer_coordinates = coords_to_list[mask]
+            # Extract the random field and material name
+            layer_rf, material_name = layers_with_names[i]
+            layer_IC = layer_rf(layer_coordinates.T)
+            values[mask] = layer_IC
+            # Append the material name to the materials list
+            materials_list.append(material_name)
+
+    else:
+        # No legacy no-RF generator exists; fall back to the plain area index (0-4) per layer
+        materials_list = []
+        for i, lst in enumerate(all_layers):
+            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            values[mask] = i
+            materials_list.append(i)
+
+    # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
+    if create_cptlike:
+        cpt_like_image = create_cptlike_array(image_matrix=values, x_max=x_max, z_max=z_max)
+
+    # Store the results in a dataframe
+    df = pd.DataFrame({"x": xs.ravel(), "z": zs.ravel(), "IC": values.ravel()})
+
+    # Save to HDF5
+    h5_filename = f"typeS_{counter + 1}.h5"
+    h5_path = os.path.join(output_folder, h5_filename)
+    with h5py.File(h5_path, "w") as f:
+        # Save the 2D array (image matrix) as a dataset
+        # Make sure to save the matrix with the correct orientation
+        f.create_dataset("ICvalues_matrix", data=values.reshape(x_max, z_max).T)  # Correctly reshape for z, x
+        f.create_dataset("cptlike_matrix", data=cpt_like_image)  # Save the cptlike data
+
+        # Save metadata as attributes
+        f.attrs["model_type"] = "S"
+        f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
+        f.attrs["description"] = "Legacy schemaGAN model: 5 layers separated by unrestricted sine/cosine boundaries, filled from a shuffled pool of 7 anisotropic random fields, stacked in random order."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
