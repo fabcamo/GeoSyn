@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from geoschemagen.create_rfs import generate_rf_group
 from geoschemagen.create_layer_boundaries import layer_boundary, layer_boundary_horizA, layer_boundary_irregular
 from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
-from utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
+from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
 
 
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
