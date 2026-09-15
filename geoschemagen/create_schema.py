@@ -11,6 +11,23 @@ from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cpt
 from geoschemagen.utils.model_config import load_model_params
 
 
+def layer_mask(area: list, no_coords: int, z_max: int) -> np.ndarray:
+    """
+    Build a boolean mask over the flattened grid selecting the cells of one layer.
+
+    Args:
+        area (list): Cells of the layer, each stored as [x, z].
+        no_coords (int): Total number of grid cells (x_max * z_max).
+        z_max (int): Depth of the model.
+    Returns:
+        np.ndarray: Boolean mask of length no_coords.
+    """
+    mask = np.zeros(no_coords, dtype=bool)
+    cells = np.asarray(area, dtype=np.intp)
+    mask[cells[:, 0] * z_max + cells[:, 1]] = True
+    return mask
+
+
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -67,7 +84,7 @@ def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed
     # Apply the random field models to the layers
     all_layers = [area_1, area_2, area_3, area_4, area_5]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         layer_IC = layers[i](layer_coordinates.T)
         values[mask] = layer_IC
@@ -151,7 +168,7 @@ def create_schema_noRF(output_folder: str, counter: int, z_max: int, x_max: int,
     all_layers = [area_1, area_2, area_3, area_4, area_5]
     for i, lst in enumerate(all_layers):
         # Create a mask to select the grid cells for each layer
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
 
         # # ORIGINAL METHOD: Apply the random value to each layer
@@ -210,7 +227,7 @@ def create_schema_one_layer(output_folder: str, counter: int, z_max: int, x_max:
 
     all_layers = [area_1]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         layer_IC = layers[i](layer_coordinates.T)
         values[mask] = layer_IC
@@ -270,7 +287,7 @@ def create_schema_six_layers(output_folder: str, counter: int, z_max: int, x_max
 
     all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         layer_IC = layers[i](layer_coordinates.T)
         values[mask] = layer_IC
@@ -333,7 +350,7 @@ def create_schema_seven_layers(output_folder: str, counter: int, z_max: int, x_m
 
     all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         layer_IC = layers[i](layer_coordinates.T)
         values[mask] = layer_IC
@@ -399,7 +416,7 @@ def create_schema_eight_layers(output_folder: str, counter: int, z_max: int, x_m
 
     all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7, area_8]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         layer_IC = layers[i](layer_coordinates.T)
         values[mask] = layer_IC
@@ -465,7 +482,7 @@ def create_schema_eight_layers_noRF(output_folder: str, counter: int, z_max: int
 
     all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7, area_8]
     for i, lst in enumerate(all_layers):
-        mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+        mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
         layer_coordinates = coords_to_list[mask]
         # Generate a random value for the layer from 1 to 5
         random_value = np.random.randint(1, 9)
@@ -552,7 +569,7 @@ def create_schema_typeA_OLD(output_folder: str, counter: int, z_max: int, x_max:
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             layer_IC = layers[i](layer_coordinates.T)
             values[mask] = layer_IC
@@ -562,7 +579,7 @@ def create_schema_typeA_OLD(output_folder: str, counter: int, z_max: int, x_max:
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             # Choose random value from 2, 3, 4, 5 with equal probability
             random_value = np.random.choice([2, 3])
             # Get the i-layer value from an user defined list
@@ -687,7 +704,7 @@ def create_schema_typeA(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
 
             # Extract the random field and material name
@@ -705,7 +722,7 @@ def create_schema_typeA(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -884,7 +901,7 @@ def create_schema_typeB(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -901,7 +918,7 @@ def create_schema_typeB(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1068,7 +1085,7 @@ def create_schema_typeC(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1085,7 +1102,7 @@ def create_schema_typeC(output_folder: str,
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1265,7 +1282,7 @@ def create_schema_typeD(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1284,7 +1301,7 @@ def create_schema_typeD(output_folder: str,
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1464,7 +1481,7 @@ def create_schema_typeE(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1485,7 +1502,7 @@ def create_schema_typeE(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1656,7 +1673,7 @@ def create_schema_typeF(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1675,7 +1692,7 @@ def create_schema_typeF(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = layer_mask(all_layers[i], coords_to_list.shape[0], z_max)
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True

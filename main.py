@@ -50,6 +50,8 @@ seed = 14  # Define a seed for the random number generator
 vali_ratio = 0.15   # Percentage of total data for validation
 test_ratio = 0.15   # Percentage of total data for testing
 
+model_config = os.path.join("config", "model_params.json")
+
 # Define the model types
 model_types = ["S"]
 
@@ -71,6 +73,7 @@ if __name__ == "__main__":
                           z_max=z_max, x_max=x_max,
                           seed=seed,
                           model_type=model_type,
+                          config_path=model_config,
                           use_RF=use_RF,
                           create_cptlike=create_cptlike,
                           save_image=save_image,

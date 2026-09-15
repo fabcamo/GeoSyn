@@ -1,12 +1,8 @@
-import os
 import random
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
     create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, \
     create_schema_typeE, create_schema_typeF, create_schema_typeS
-
-# Bundled defaults with tunable boundary parameters for every model type (A-F, S)
-DEFAULT_MODEL_CONFIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "model_params.json")
 
 
 def generate_database(output_folder: str,
@@ -15,13 +11,13 @@ def generate_database(output_folder: str,
                       x_max: int,
                       seed:int,
                       model_type:str,
+                      config_path:str,
                       use_RF:bool = True,
                       create_cptlike:bool = False,
                       save_image:bool = False,
                       save_cptlike_image:bool = False,
                       save_csv:bool = False,
-                      save_h5:bool = True,
-                      config_path:str = DEFAULT_MODEL_CONFIG):
+                      save_h5:bool = True):
     """
     Generate a database of synthetic data with given parameters and save results in the specified output folder.
 
@@ -32,14 +28,13 @@ def generate_database(output_folder: str,
         x_max (int): The length of the model.
         seed (int): The seed for the random number generator.
         model_type (str): The type of subsoil model to generate.
+        config_path (str): Path to the JSON file with the selected model_type's boundary
+            parameters (amplitude, period, phase_shift, vertical_shift, etc.).
         use_RF (bool): Whether to use Random Fields. Default is True.
         create_cptlike (bool): Whether to create CPT-like images. Default is False.
         save_image (bool): Whether to save the images. Default is False.
         save_csv (bool): Whether to save the CSV files. Default is False.
         save_h5 (bool): Whether to save the HDF5 (.h5) files. Default is True.
-        config_path (str): Path to a JSON file overriding the selected model_type's boundary
-            parameters (amplitude, period, phase_shift, vertical_shift, etc.). Defaults to
-            geoschemagen/config/model_params.json.
 
     Return:
         None
@@ -154,8 +149,6 @@ def generate_database(output_folder: str,
 
             elif model_type == "S":
                 # Legacy schemaGAN model: 5 layers, unrestricted sine/cosine boundaries, random order
-                # Boundary parameters (amplitude, period, phase_shift, vertical_shift) are read from
-                # geoschemagen/config/model_params.json (or config_path, if given)
                 create_schema_typeS(output_folder=output_folder,
                                     counter=counter,
                                     z_max=z_max,
