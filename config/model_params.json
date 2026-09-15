@@ -1,0 +1,249 @@
+{
+    "_comment": "Tunable boundary parameters for every model type (A-F, S). 'x_max'/'z_max' are resolved to the model's actual length/depth at runtime; any field can instead be a fixed number.",
+    "_legend": {
+        "amplitude": "Wave height of the sine/cosine boundary (peak-to-peak), in the same units as z_max/depth.",
+        "period": "Wavelength of the sine/cosine boundary along x, in the same units as x_max/length. Smaller value = more oscillations.",
+        "phase_shift": "Horizontal offset (along x) that shifts where the wave starts.",
+        "vertical_shift": "Vertical offset (depth) the wave is centered around.",
+        "low": "Minimum value the Beta-PERT distribution can sample for this parameter.",
+        "peak": "Most likely value (the distribution's mode) for this parameter.",
+        "high": "Maximum value the Beta-PERT distribution can sample for this parameter.",
+        "lamb": "Beta-PERT shape parameter: how tightly sampled values cluster around 'peak'. Higher = more concentrated near peak, lower = flatter/more spread out. Defaults to 10 if omitted.",
+        "bands": "List of [start_depth, end_depth] pairs (z_max units) marking where each layer boundary sits, used by the banded/vertical layering models (B, D).",
+        "functions": "Which wave shapes ('sin' and/or 'cos') may be randomly picked for the boundary.",
+        "x_max/z_max as string values": "Placeholders meaning 'use the model's actual length (x_max) or depth (z_max) at runtime' instead of a fixed number."
+    },
+    "A": {
+        "horizA": {
+            "amplitude": {
+                "low": 2,
+                "peak": 3,
+                "high": 5
+            },
+            "period": {
+                "low": 1000,
+                "peak": 2000,
+                "high": 3000
+            },
+            "phase_shift": {
+                "low": 0,
+                "high": 0
+            },
+            "vertical_shift": {
+                "low": 3,
+                "high": 25
+            }
+        }
+    },
+    "B": {
+        "subhorizD_vert": {
+            "amplitude": {
+                "low": 2,
+                "peak": 5,
+                "high": 8
+            },
+            "period": {
+                "low": 1000,
+                "peak": 3000,
+                "high": 4000
+            },
+            "phase_shift": {
+                "low": 0,
+                "high": 0
+            }
+        },
+        "bands": [
+            [
+                0,
+                3
+            ],
+            [
+                4,
+                6
+            ],
+            [
+                9,
+                11
+            ],
+            [
+                14,
+                15
+            ],
+            [
+                17,
+                21
+            ]
+        ]
+    },
+    "C": {
+        "lensC": {
+            "amplitude": {
+                "low": 20,
+                "peak": 30,
+                "high": 50
+            },
+            "period": {
+                "low": 200,
+                "peak": 300,
+                "high": 800
+            },
+            "phase_shift": {
+                "low": 0,
+                "high": 250
+            },
+            "vertical_shift": {
+                "low": 10,
+                "high": "z_max"
+            }
+        },
+        "subhorizB": {
+            "amplitude": {
+                "low": 2,
+                "peak": 5,
+                "high": 10
+            },
+            "period": {
+                "low": 1000,
+                "peak": 2000,
+                "high": 3000
+            },
+            "phase_shift": {
+                "low": 0,
+                "high": 50
+            },
+            "vertical_shift": {
+                "low": 0,
+                "high": 20
+            }
+        }
+    },
+    "D": {
+        "subhorizD_vert": {
+            "amplitude": {
+                "low": 2,
+                "peak": 5,
+                "high": 8
+            },
+            "period": {
+                "low": 1000,
+                "peak": 3000,
+                "high": 4000
+            },
+            "phase_shift": {
+                "low": 0,
+                "high": 0
+            }
+        },
+        "bands": [
+            [
+                0,
+                2
+            ],
+            [
+                4,
+                6
+            ],
+            [
+                9,
+                11
+            ],
+            [
+                14,
+                15
+            ],
+            [
+                17,
+                21
+            ],
+            [
+                20,
+                29
+            ]
+        ]
+    },
+    "E": {
+        "period": {
+            "low": 2000,
+            "peak": 3500,
+            "high": 5000
+        },
+        "trigo_1": {
+            "amplitude": {
+                "low": 35,
+                "peak": 70,
+                "high": 100
+            },
+            "phase_shift": {
+                "low": -1500,
+                "high": -1000
+            },
+            "vertical_shift": {
+                "low": -28,
+                "high": 0
+            }
+        },
+        "trigo_2": {
+            "amplitude": {
+                "low": 20,
+                "peak": 40,
+                "high": 50
+            },
+            "phase_shift": {
+                "low": 1000,
+                "high": 1500
+            },
+            "vertical_shift": {
+                "low": 0,
+                "high": 28
+            }
+        }
+    },
+    "F": {
+        "irregular": {
+            "amplitude": {
+                "low": 5,
+                "peak": 20,
+                "high": 45
+            },
+            "period": {
+                "low": 250,
+                "peak": 1000,
+                "high": 2000
+            },
+            "phase_shift": {
+                "low": 100,
+                "high": 1000
+            },
+            "vertical_shift": {
+                "low": 0,
+                "high": "z_max"
+            }
+        }
+    },
+    "S": {
+        "amplitude": {
+            "low": 2,
+            "peak": 5,
+            "high": "z_max",
+            "lamb": 10
+        },
+        "period": {
+            "low": "x_max",
+            "peak": 1000,
+            "high": 10000,
+            "lamb": 10
+        },
+        "phase_shift": {
+            "low": 0,
+            "high": "x_max"
+        },
+        "vertical_shift": {
+            "low": 0,
+            "high": "z_max"
+        },
+        "functions": [
+            "sin",
+            "cos"
+        ]
+    }
+}

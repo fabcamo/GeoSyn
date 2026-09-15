@@ -58,7 +58,8 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(train_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(train_folder, png_file))
         shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(train_folder, cpt_like_file))
-        shutil.copy(os.path.join(data_path, h5_file), os.path.join(train_folder, h5_file))
+        if os.path.exists(os.path.join(data_path, h5_file)):
+            shutil.copy(os.path.join(data_path, h5_file), os.path.join(train_folder, h5_file))
 
     for i in indexes_validation:
         csv_file = csv_files[i]
@@ -69,7 +70,8 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(validation_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(validation_folder, png_file))
         shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(validation_folder, cpt_like_file))
-        shutil.copy(os.path.join(data_path, h5_file), os.path.join(validation_folder, h5_file))
+        if os.path.exists(os.path.join(data_path, h5_file)):
+            shutil.copy(os.path.join(data_path, h5_file), os.path.join(validation_folder, h5_file))
 
     for i in indexes_test:
         csv_file = csv_files[i]
@@ -80,7 +82,8 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(test_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(test_folder, png_file))
         shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(test_folder, cpt_like_file))
-        shutil.copy(os.path.join(data_path, h5_file), os.path.join(test_folder, h5_file))
+        if os.path.exists(os.path.join(data_path, h5_file)):
+            shutil.copy(os.path.join(data_path, h5_file), os.path.join(test_folder, h5_file))
 
     # Delete the csv and png files from the original folder
     for file_name in csv_files:
@@ -95,7 +98,8 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         os.remove(file_path)
         h5_file = file_name.replace(".csv", ".h5")
         file_path = os.path.join(data_path, h5_file)
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
     # # Move matching files from cptlike folder to test folder
     # # Define the cptlike and test folders

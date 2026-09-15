@@ -28,6 +28,7 @@ The user needs to input:
     - "D": Horizontal layers with intercalations sand and clay, up to 7 layers, fixed bottom not always present.
     - "E": Inclined layers
     - "F": Irregular sinuosoidal layers
+    - "S": Legacy schemaGAN model, 5 layers with unrestricted sine/cosine boundaries, random order.
 """
 
 # USER DEFINED PARAMETERS
@@ -43,13 +44,14 @@ create_cptlike = True       # On or off: create CPT-like images
 save_image = True           # On or off: save the images
 save_cptlike_image = True  # On or off: save the cpt-like images
 save_csv = True            # On or off: save the csv files
+save_h5 = True              # On or off: save the h5 files
 
 seed = 14  # Define a seed for the random number generator
 vali_ratio = 0.15   # Percentage of total data for validation
 test_ratio = 0.15   # Percentage of total data for testing
 
 # Define the model types
-model_types = ["A"]
+model_types = ["S"]
 
 if __name__ == "__main__":
     # Start the overall timer
@@ -73,7 +75,8 @@ if __name__ == "__main__":
                           create_cptlike=create_cptlike,
                           save_image=save_image,
                           save_cptlike_image=save_cptlike_image,
-                          save_csv=save_csv)
+                          save_csv=save_csv,
+                          save_h5=save_h5)
 
         validation_folder = os.path.join(model_output_folder, "validation")
         test_folder = os.path.join(model_output_folder, "test")
