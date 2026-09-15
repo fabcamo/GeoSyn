@@ -905,7 +905,7 @@ def create_schema_typeB(output_folder: str,
         f.attrs["model_type"] = "B"
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         #TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic transition area with subhorizontal layers and complex indentations with the pleistocene sand as base layer at 30 m depth"
+        f.attrs["description"] = "Deltaic transition area with subhorizontal layers and complex indentations with the pleistocene sand as base layer at 30 m depth. Intercalations of sandy and clayey materials, as well as organic clays and peat. Complex layering."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
@@ -1081,7 +1081,7 @@ def create_schema_typeC(output_folder: str,
         f.attrs["model_type"] = "C"
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
+        f.attrs["description"] = "Floodplain deposits consisting of predominantly silty clay with occasional sand or clay lenses that cut through subhorizontal bedding. These lenses represent higher-energy flood events, while the overall unit reflects the low-energy, fluctuating conditions typical of a floodplain environment."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
@@ -1269,7 +1269,7 @@ def create_schema_typeD(output_folder: str,
         f.attrs["model_type"] = "D"
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
+        f.attrs["description"] = "Intercalated layers of sand and clay from transitional delta deposits, with sand showing occasional ripple marks and clay forming thin, laminated beds. The unit has gradational contacts, reflecting alternating deposition from varying energy conditions in a deltaic environment."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
@@ -1460,7 +1460,7 @@ def create_schema_typeE(output_folder: str,
         f.attrs["model_type"] = "E"
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
+        f.attrs["description"] = "Steeply dipping layers of fine to coarse sand interbedded with silty clay, characteristic of deltaic foreset deposits. The unit shows inclined bedding, reflecting sediment deposition on a prograding delta front, with occasional grading and cross-lamination indicating fluctuating flow conditions."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF
@@ -1641,7 +1641,7 @@ def create_schema_typeF(output_folder: str,
         f.attrs["model_type"] = "F"
         f.attrs["matrix_shape"] = values.reshape(x_max, z_max).T.shape
         # TODO: Add a description that makes sense for the model
-        f.attrs["description"] = "Deltaic area with subhorizontal layers and the pleistocene sand as base layer at 30 m depth"
+        f.attrs["description"] = "Heterogeneous unit with fine to coarse sand showing cross-bedding, interspersed with clay and silt lenses. The deposit features irregular geometries, including channel-shaped indentations and lateral accretion surfaces, reflecting deposition in a meandering river system with variable flow conditions."
         f.attrs["date"] = str(datetime.datetime.now())
         f.attrs["seed"] = seed
         f.attrs["randomfield"] = RF

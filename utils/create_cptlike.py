@@ -327,6 +327,3 @@ def create_cptlike_array(image_matrix: np.array, x_max: int, z_max: int, plot: b
 
 
     return data
-
-
-    return data

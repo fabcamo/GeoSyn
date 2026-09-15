@@ -28,7 +28,6 @@ def load_and_plot_h5(h5_path: str, scale_factor: float = 2):
         # Access the cpt-like image dataset
         cptlike_image = f["cptlike_matrix"][:]
 
-
         # Calculate figure size based on the matrix dimensions (matching the original format)
         #z_max, x_max = image_matrix.shape
         #figsize = (x_max / 100 * scale_factor, z_max / 50 * scale_factor)  # Adjusting for 2 plots vertically
@@ -51,6 +50,8 @@ def load_and_plot_h5(h5_path: str, scale_factor: float = 2):
 
         # Show the plot
         plt.show()
+
+
 # Example usage:
-h5_file_path = r"D:\GeoSchemaGen\tests\typeF_RFTrue_20241212\typeF_1.h5"
+h5_file_path = r"D:\GeoSchemaGen\tests\cs_20241216\cs_3.h5"
 load_and_plot_h5(h5_file_path, scale_factor=2)  # Increase size by factor of 2
