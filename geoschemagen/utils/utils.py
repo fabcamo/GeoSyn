@@ -52,20 +52,35 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
     for i in indexes_train:
         csv_file = csv_files[i]
         png_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = "cptlike_" + cpt_like_file
+        h5_file = csv_file.replace(".csv", ".h5")
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(train_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(train_folder, png_file))
+        shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(train_folder, cpt_like_file))
+        shutil.copy(os.path.join(data_path, h5_file), os.path.join(train_folder, h5_file))
 
     for i in indexes_validation:
         csv_file = csv_files[i]
         png_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = "cptlike_" + cpt_like_file
+        h5_file = csv_file.replace(".csv", ".h5")
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(validation_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(validation_folder, png_file))
+        shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(validation_folder, cpt_like_file))
+        shutil.copy(os.path.join(data_path, h5_file), os.path.join(validation_folder, h5_file))
 
     for i in indexes_test:
         csv_file = csv_files[i]
         png_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = csv_file.replace(".csv", ".png")
+        cpt_like_file = "cptlike_" + cpt_like_file
+        h5_file = csv_file.replace(".csv", ".h5")
         shutil.copy(os.path.join(data_path, csv_file), os.path.join(test_folder, csv_file))
         shutil.copy(os.path.join(data_path, png_file), os.path.join(test_folder, png_file))
+        shutil.copy(os.path.join(data_path, cpt_like_file), os.path.join(test_folder, cpt_like_file))
+        shutil.copy(os.path.join(data_path, h5_file), os.path.join(test_folder, h5_file))
 
     # Delete the csv and png files from the original folder
     for file_name in csv_files:
@@ -74,21 +89,30 @@ def split_data(data_path: str, train_folder: str, validation_folder: str, test_f
         png_file = file_name.replace(".csv", ".png")
         file_path = os.path.join(data_path, png_file)
         os.remove(file_path)
+        cpt_like_file = file_name.replace(".csv", ".png")
+        cpt_like_file = "cptlike_" + cpt_like_file
+        file_path = os.path.join(data_path, cpt_like_file)
+        os.remove(file_path)
+        h5_file = file_name.replace(".csv", ".h5")
+        file_path = os.path.join(data_path, h5_file)
+        os.remove(file_path)
 
-    # Move matching files from cptlike folder to test folder
-    # Define the cptlike and test folders
-    source_folder = test_folder
-    destination_folder = os.path.join(data_path, "cptlike_images")
-    move_matching_files(source_folder, destination_folder)
-    # Move matching files from cptlike folder to validation folder
-    source_folder = validation_folder
-    move_matching_files(source_folder, destination_folder)
-    # Move matching files from cptlike folder to train folder
-    source_folder = train_folder
-    move_matching_files(source_folder, destination_folder)
+    # # Move matching files from cptlike folder to test folder
+    # # Define the cptlike and test folders
+    # source_folder = test_folder
+    # destination_folder = os.path.join(data_path, "cptlike_images")
+    # os.makedirs(destination_folder, exist_ok=True)
 
-    # Delete the cptlike folder
-    shutil.rmtree(destination_folder)
+    # move_matching_files(source_folder, destination_folder)
+    # # Move matching files from cptlike folder to validation folder
+    # source_folder = validation_folder
+    # move_matching_files(source_folder, destination_folder)
+    # # Move matching files from cptlike folder to train folder
+    # source_folder = train_folder
+    # move_matching_files(source_folder, destination_folder)
+
+    # # Delete the cptlike folder
+    # # shutil.rmtree(destination_folder)
 
 
 

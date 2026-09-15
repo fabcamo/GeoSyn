@@ -31,7 +31,7 @@ The user needs to input:
 """
 
 # USER DEFINED PARAMETERS
-no_realizations = 5000    # Number of realizations to generate
+no_realizations = 10    # Number of realizations to generate
 output_base_folder = r'tests'  # Base folder to save outputs
 
 x_max = 512     # Length (x) of the model
@@ -41,15 +41,15 @@ z_max = 32      # Depth (z) of the model
 use_RF = True               # On or off: use Random Fields
 create_cptlike = True       # On or off: create CPT-like images
 save_image = True           # On or off: save the images
-save_cptlike_image = False  # On or off: save the cpt-like images
-save_csv = False            # On or off: save the csv files
+save_cptlike_image = True  # On or off: save the cpt-like images
+save_csv = True            # On or off: save the csv files
 
-seed = 20202020  # Define a seed for the random number generator
-vali_ratio = 0   # Percentage of total data for validation
-test_ratio = 0   # Percentage of total data for testing
+seed = 14  # Define a seed for the random number generator
+vali_ratio = 0.15   # Percentage of total data for validation
+test_ratio = 0.15   # Percentage of total data for testing
 
 # Define the model types
-model_types = ["A", "B", "C", "D", "E", "F"]
+model_types = ["A"]
 
 if __name__ == "__main__":
     # Start the overall timer
@@ -74,6 +74,18 @@ if __name__ == "__main__":
                           save_image=save_image,
                           save_cptlike_image=save_cptlike_image,
                           save_csv=save_csv)
+
+        validation_folder = os.path.join(model_output_folder, "validation")
+        test_folder = os.path.join(model_output_folder, "test")
+        train_folder = os.path.join(model_output_folder, "train")
+        split_data(
+            data_path=model_output_folder,
+            train_folder=train_folder,
+            validation_folder=validation_folder,
+            test_folder=test_folder,
+            vali_ratio=vali_ratio,
+            test_ratio=test_ratio,
+        )
 
         print(f"Completed generation for model type {model_type}. Output saved to {model_output_folder}")
 
