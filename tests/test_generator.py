@@ -15,17 +15,18 @@ def test_generation_images(model_type):
     """
 
     no_realizations = 10    # Number of realizations to generate
-    output_base_folder = f'tmp_{model_type}'  # Base folder to save outputs
+    output_base_folder = f'tests/tmp_{model_type}'  # Base folder to save outputs
     os.makedirs(output_base_folder, exist_ok=True)
 
     x_max = 512     # Length (x) of the model
     z_max = 32      # Depth (z) of the model
 
     use_RF = True               # On or off: use Random Fields
-    create_cptlike = True       # On or off: create CPT-like images
-    save_image = True           # On or off: save the images
-    save_cptlike_image = True  # On or off: save the cpt-like images
+    create_cptlike = False       # On or off: create CPT-like images
+    save_image = False           # On or off: save the images
+    save_cptlike_image = False  # On or off: save the cpt-like images
     save_csv = True            # On or off: save the csv files
+    save_h5 = False             # On or off: save the h5 files
 
     seed = 14  # Define a seed for the random number generator
     vali_ratio = 0.15   # Percentage of total data for validation
@@ -41,7 +42,8 @@ def test_generation_images(model_type):
                     create_cptlike=create_cptlike,
                     save_image=save_image,
                     save_cptlike_image=save_cptlike_image,
-                    save_csv=save_csv)
+                    save_csv=save_csv,
+                    save_h5=save_h5)
 
     validation_folder = os.path.join(output_base_folder, "validation")
     test_folder = os.path.join(output_base_folder, "test")

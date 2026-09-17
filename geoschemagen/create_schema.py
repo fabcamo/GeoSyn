@@ -11,6 +11,18 @@ from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cpt
 from geoschemagen.utils.model_config import load_model_params
 
 
+def _layer_mask(coords_to_list: np.array, layer_points: list) -> np.array:
+    """
+    Build a boolean mask selecting which rows of coords_to_list belong to layer_points.
+
+    Returns an all-False mask when layer_points is empty instead of raising (a layer can end up
+    empty when randomly-drawn boundaries happen to overlap/cross for a given seed).
+    """
+    if len(layer_points) == 0:
+        return np.zeros(coords_to_list.shape[0], dtype=bool)
+    return (coords_to_list[:, None] == layer_points).all(2).any(1)
+
+
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
     """
     Generate synthetic data with given parameters and save results in the specified output folder.
@@ -687,12 +699,13 @@ def create_schema_typeA(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
 
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -705,7 +718,7 @@ def create_schema_typeA(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -884,11 +897,12 @@ def create_schema_typeB(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -901,7 +915,7 @@ def create_schema_typeB(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1068,11 +1082,12 @@ def create_schema_typeC(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -1085,7 +1100,7 @@ def create_schema_typeC(output_folder: str,
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1265,11 +1280,12 @@ def create_schema_typeD(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -1284,7 +1300,7 @@ def create_schema_typeD(output_folder: str,
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1464,11 +1480,12 @@ def create_schema_typeE(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -1485,7 +1502,7 @@ def create_schema_typeE(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1656,11 +1673,12 @@ def create_schema_typeF(output_folder: str,
         # Apply the random field models to the layers
         all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -1675,7 +1693,7 @@ def create_schema_typeF(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1830,11 +1848,12 @@ def create_schema_typeS(output_folder: str,
         materials_list = []  # Create a list to store the materials used in each layer
         # Apply the random field models to the layers
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = layers_with_names[i]
-            layer_IC = layer_rf(layer_coordinates.T)
+            # Explicit per-layer seed: reproducible regardless of call order/count
+            layer_IC = layer_rf(layer_coordinates.T, seed=seed + counter * 1000 + i)
             values[mask] = layer_IC
             # Append the material name to the materials list
             materials_list.append(material_name)
@@ -1843,7 +1862,7 @@ def create_schema_typeS(output_folder: str,
         # No legacy no-RF generator exists; fall back to the plain area index (0-4) per layer
         materials_list = []
         for i, lst in enumerate(all_layers):
-            mask = (coords_to_list[:, None] == all_layers[i]).all(2).any(1)
+            mask = _layer_mask(coords_to_list, all_layers[i])
             values[mask] = i
             materials_list.append(i)
 
