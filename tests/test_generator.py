@@ -4,8 +4,6 @@ from geoschemagen.utils.utils import split_data
 from geoschemagen.generate_database import generate_database
 import pytest
 
-DEFAULT_MODEL_CONFIG = os.path.join(os.path.dirname("config", "model_params.json")
-
 
 @pytest.mark.parametrize("model_type", ["A", "B", "C", "D", "E", "F", "S"])
 def test_generation_images(model_type):
@@ -39,7 +37,6 @@ def test_generation_images(model_type):
                     z_max=z_max, x_max=x_max,
                     seed=seed,
                     model_type=model_type,
-                    config_path=DEFAULT_MODEL_CONFIG,
                     use_RF=use_RF,
                     create_cptlike=create_cptlike,
                     save_image=save_image,
