@@ -58,10 +58,10 @@ def test_generation_images(model_type):
     # compare the CSV against results
     folders = ["test", "train", "validation"]
     for fold in folders:
-        files = [f for f in os.listdir(f"./tests/results/{model_type}/{fold}") if f.endswith(".csv")]
+        files = [f for f in os.listdir(f"./tests/_results/{model_type}/{fold}") if f.endswith(".csv")]
         for file in files:
             assert compare_csv(
-                os.path.join(f"./tests/results/{model_type}/{fold}", file),
+                os.path.join(f"./tests/_results/{model_type}/{fold}", file),
                 os.path.join(output_base_folder, fold, file)
                 )
 
