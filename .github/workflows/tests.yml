@@ -24,6 +24,7 @@ jobs:
         python-version: ${{ matrix.python }}
     - name: Install dependencies
       run: |
+        pip install numpy==2.2.2 scipy==1.15.1 gstools==1.6.1 pandas==2.2.3
         pip install ."[testing]"
     - name: Test with pytest
       run: pytest "tests/test_generator.py::test_generation_images[A]" -vv -s -o faulthandler_timeout=60
