@@ -26,4 +26,4 @@ jobs:
       run: |
         pip install ."[testing]"
     - name: Test with pytest
-      run: pytest "tests/test_generator.py::test_generation_images[A]" -vv -s -o faulthandler_timeout=60
+      run: pytest tests
