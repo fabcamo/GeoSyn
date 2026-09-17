@@ -1,16 +1,7 @@
 env/
-/tests/outputs/
 /venv/
 .build
 .vscode/
 __pycache__/
 .egg-info/
 .idea/
-tests/BCS/
-tests/cs_20241216/
-tests/noRF5/
-tests/noRF8/
-tests/test/
-tests/train/
-tests/validate/
-tests/type*_RFTrue_*/
