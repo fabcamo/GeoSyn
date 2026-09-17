@@ -643,15 +643,21 @@ def create_schema_typeA(output_folder: str,
     # Define the geometry for the synthetic data generation
     x_coord = np.arange(0, x_max, 1)  # Array of x coordinates
     z_coord = np.arange(0, z_max, 1)  # Array of z coordinates
+
+    print(f"DEBUG x_max={x_max!r}, z_max={z_max!r}", flush=True)
+
+    x_coord = np.arange(0, x_max, 1)
+    z_coord = np.arange(0, z_max, 1)
+
+    print(
+        f"DEBUG x_coord.shape={x_coord.shape}, z_coord.shape={z_coord.shape}",
+        flush=True
+    )
+
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
     matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
-
-    #DEBBUG
-    print(f"DEBUG x_max={x_max}, z_max={z_max}", flush=True)
-    print(f"DEBUG xs.shape={xs.shape}, zs.shape={zs.shape}", flush=True)
-
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
