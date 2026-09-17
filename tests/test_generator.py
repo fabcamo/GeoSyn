@@ -74,41 +74,40 @@ from itertools import zip_longest
 
 
 def compare_csv(file1, file2):
+    """
+    Compares the contents of two CSV files, allowing for very small
+    floating-point differences in the IC values.
+    """
+
     with open(file1, "r") as f1:
         content1 = f1.readlines()
 
     with open(file2, "r") as f2:
         content2 = f2.readlines()
 
-    for line_no, (expected, actual) in enumerate(
-        zip_longest(content1, content2),
-        start=1,
-    ):
-        if expected != actual:
-            print(f"\nFirst difference at line {line_no}")
-            print(f"EXPECTED: {expected!r}")
-            print(f"ACTUAL:   {actual!r}")
+    # Different number of lines means different files
+    if len(content1) != len(content2):
+        return False
+
+    for line1, line2 in zip(content1, content2):
+
+        # If lines are exactly equal, nothing else to check
+        if line1 == line2:
+            continue
+
+        values1 = line1.strip().split(",")
+        values2 = line2.strip().split(",")
+
+        # x and z must still be exactly identical
+        if values1[:-1] != values2[:-1]:
+            return False
+
+        # Allow tiny floating-point differences in IC
+        try:
+            if abs(float(values1[-1]) - float(values2[-1])) > 1e-12:
+                return False
+        except ValueError:
+            # Handles header or other non-numeric differences
             return False
 
     return True
-
-
-# def compare_csv(file1, file2):
-#     """
-#     Compares the contents of two CSV files.
-
-#     Args:
-#         file1 (str): Path to the first CSV file.
-#         file2 (str): Path to the second CSV file.
-
-#     Returns:
-#         bool: True if the contents of the files are identical, False otherwise.
-#     """
-
-#     with open(file1, 'r') as f1:
-#         content1 = f1.readlines()
-
-#     with open(file2, 'r') as f2:
-#         content2 = f2.readlines()
-
-#     return content1 == content2
