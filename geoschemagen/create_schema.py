@@ -647,6 +647,11 @@ def create_schema_typeA(output_folder: str,
 
     # Set up the matrix geometry
     matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
+
+    #DEBBUG
+    print(f"DEBUG x_max={x_max}, z_max={z_max}", flush=True)
+    print(f"DEBUG xs.shape={xs.shape}, zs.shape={zs.shape}", flush=True)
+
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
