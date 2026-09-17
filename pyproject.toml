@@ -25,14 +25,8 @@ dependencies = [
     "gstools>=1.5",
 ]
 
-[tool.setuptools]
-packages = ["geoschemagen", "geoschemagen.utils", "geoschemagen.config"]
-
-[tool.setuptools.package-dir]
-"geoschemagen.config" = "config"
-
-[tool.setuptools.package-data]
-"geoschemagen.config" = ["*.json"]
+[tool.setuptools.packages.find]
+include = ["geoschemagen*"]
 
 [project.optional-dependencies]
 testing = ["pytest"]

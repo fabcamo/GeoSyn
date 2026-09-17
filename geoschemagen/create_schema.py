@@ -7,20 +7,32 @@ import matplotlib.pyplot as plt
 from geoschemagen.create_rfs import generate_rf_group, generate_rf_group_legacy
 from geoschemagen.create_layer_boundaries import layer_boundary, layer_boundary_horizA, layer_boundary_irregular
 from geoschemagen.create_layer_boundaries import layer_boundary_subhorizB, layer_boundary_lensC, layer_boundary_subhorizD_vert, layer_boundary_irregularE
-from geoschemagen.utils.create_cptlike import from_schema_to_cptlike, create_cptlike_array
+from geoschemagen.utils.create_cptlike import create_cptlike_array
 from geoschemagen.utils.model_config import load_model_params
 
 
-def _layer_mask(coords_to_list: np.array, layer_points: list) -> np.array:
+def _layer_masks(coords_to_list: np.array, boundaries: list) -> list:
     """
-    Build a boolean mask selecting which rows of coords_to_list belong to layer_points.
+    Split the grid into len(boundaries) + 1 layers and return one boolean mask (over the rows of
+    coords_to_list) per layer.
 
-    Returns an all-False mask when layer_points is empty instead of raising (a layer can end up
-    empty when randomly-drawn boundaries happen to overlap/cross for a given seed).
+    A cell (col, row) belongs to the first layer k for which row <= boundaries[k][col]; cells below
+    every boundary go to the last layer. This is the vectorised equivalent of the per-cell
+    if/elif/else loop the generators used to run, and it never builds per-cell Python lists, so
+    memory stays linear in the grid size (e.g. 5120 x 320 needs only a few MB).
+
+    A layer can end up empty when randomly-drawn boundaries overlap/cross for a given seed; its mask
+    is then simply all False.
     """
-    if len(layer_points) == 0:
-        return np.zeros(coords_to_list.shape[0], dtype=bool)
-    return (coords_to_list[:, None] == layer_points).all(2).any(1)
+    cols = coords_to_list[:, 0]
+    rows = coords_to_list[:, 1]
+    n_layers = len(boundaries) + 1
+    layer_index = np.full(coords_to_list.shape[0], n_layers - 1, dtype=np.int64)
+
+    # Walk the boundaries bottom-up so that the top-most matching boundary wins
+    for k in range(len(boundaries) - 1, -1, -1):
+        layer_index[rows <= np.asarray(boundaries[k])[cols]] = k
+    return [layer_index == k for k in range(n_layers)]
 
 
 def create_schema(output_folder: str, counter: int, z_max: int, x_max: int, seed: int = 20220412):
@@ -647,7 +659,6 @@ def create_schema_typeA(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -661,20 +672,8 @@ def create_schema_typeA(output_folder: str,
     boundaries = [y1, y2, y3]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4 = [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            else:
-                area_4.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -698,9 +697,8 @@ def create_schema_typeA(output_folder: str,
 
         materials_list = [] # Create a list to store the material names
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
 
             # Extract the random field and material name
@@ -713,13 +711,12 @@ def create_schema_typeA(output_folder: str,
 
     else:
         # Apply the discrete values to the layers
-        all_layers = [area_1, area_2, area_3, area_4]
         random_value = np.random.choice([2, 3])  # Choose random value from 2, 3 with equal probability
         user_layer_values = [4, 3, random_value, 1]  # Get the i-layer value from an user defined list
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -832,7 +829,6 @@ def create_schema_typeB(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -851,24 +847,8 @@ def create_schema_typeB(output_folder: str,
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4, area_5, area_6 = [], [], [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            elif row <= boundaries[3][col]:
-                area_4.append([col, row])
-            elif row <= boundaries[4][col]:
-                area_5.append([col, row])
-            else:
-                area_6.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -896,9 +876,8 @@ def create_schema_typeB(output_folder: str,
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -910,13 +889,12 @@ def create_schema_typeB(output_folder: str,
 
     else:
         # Apply the discrete values to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6]
         random_value = np.random.choice([4, 1]) # Choose random value from 4 or 1 with equal probability
         user_layer_values = [random_value, 1, random_value, 3, 2, 5] # Get the i-layer value from an user defined list
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1028,7 +1006,6 @@ def create_schema_typeC(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -1042,20 +1019,8 @@ def create_schema_typeC(output_folder: str,
     boundaries = [y1, y2, y3]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4 = [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            else:
-                area_4.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -1081,9 +1046,8 @@ def create_schema_typeC(output_folder: str,
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1095,13 +1059,12 @@ def create_schema_typeC(output_folder: str,
 
     else:
         # Apply the discrete values to the layers
-        all_layers = [area_1, area_2, area_3, area_4]
         user_layer_values = [2, 4, 1, 3] # Define the values for each layer
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1213,7 +1176,6 @@ def create_schema_typeD(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -1232,26 +1194,8 @@ def create_schema_typeD(output_folder: str,
     boundaries = [y1, y2, y3, y4, y5, y6]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4, area_5, area_6, area_7 = [], [], [], [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            elif row <= boundaries[3][col]:
-                area_4.append([col, row])
-            elif row <= boundaries[4][col]:
-                area_5.append([col, row])
-            elif row <= boundaries[5][col]:
-                area_6.append([col, row])
-            else:
-                area_7.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -1279,9 +1223,8 @@ def create_schema_typeD(output_folder: str,
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1293,7 +1236,6 @@ def create_schema_typeD(output_folder: str,
 
     else:
         # Apply the discrete values to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5, area_6, area_7]
         random_value = np.random.choice([5, 6]) # Choose random value from 5, 6 with equal probability
         # Generate random non-repeating values for the layers using NumPy
         user_layer_values = [6, random_value, 5, 6, 5, random_value, 1]
@@ -1301,7 +1243,7 @@ def create_schema_typeD(output_folder: str,
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
             # Create a mask to select the grid cells for each layer
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             # Apply the user defined values to the mask
             values[mask] = user_layer_values[i]
 
@@ -1415,7 +1357,6 @@ def create_schema_typeE(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -1437,22 +1378,8 @@ def create_schema_typeE(output_folder: str,
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4, area_5 = [], [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            elif row <= boundaries[3][col]:
-                area_4.append([col, row])
-            else:
-                area_5.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -1479,9 +1406,8 @@ def create_schema_typeE(output_folder: str,
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1494,7 +1420,6 @@ def create_schema_typeE(output_folder: str,
 
     else:
         # Apply the discrete values to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5]
         # Choose random value from 2, 4 with equal probability
         random_value = np.random.choice([2, 4])
         # Get the i-layer value from an user defined list
@@ -1503,7 +1428,7 @@ def create_schema_typeE(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1614,7 +1539,6 @@ def create_schema_typeF(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -1630,22 +1554,8 @@ def create_schema_typeF(output_folder: str,
     boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4, area_5 = [], [], [], [], []
-
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            elif row <= boundaries[3][col]:
-                area_4.append([col, row])
-            else:
-                area_5.append([col, row])
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
     # Fill the layers with the corresponding values
     if RF:
@@ -1672,9 +1582,8 @@ def create_schema_typeF(output_folder: str,
         # Create a list to store the materials used in each layer
         materials_list = []
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5]
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = my_layers[i]
@@ -1686,7 +1595,6 @@ def create_schema_typeF(output_folder: str,
 
     else:
         # Apply the random field models to the layers
-        all_layers = [area_1, area_2, area_3, area_4, area_5]
         random_value = np.random.choice([2, 4]) # Choose random value from 2, 4 with equal probability
         # Get the i-layer value from an user defined list
         user_layer_values = [5, random_value, 3, random_value, 1]
@@ -1694,7 +1602,7 @@ def create_schema_typeF(output_folder: str,
         # Append the value used in each layer to a list
         materials_list = user_layer_values
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             values[mask] = user_layer_values[i]
 
     # Create the cptlike data that accompanies the synthetic data if create_cptlike is True
@@ -1806,7 +1714,6 @@ def create_schema_typeS(output_folder: str,
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry
-    matrix = np.zeros((z_max, x_max))  # Create the matrix of size {rows, cols}
     coords_to_list = np.array([xs.ravel(), zs.ravel()]).T  # Store the grid coordinates in a variable
     values = np.zeros(coords_to_list.shape[0])  # Create a matrix same as coords but with zeros
 
@@ -1821,24 +1728,9 @@ def create_schema_typeS(output_folder: str,
     boundaries = [y1, y2, y3, y4]  # Store the boundaries in a list
     boundaries = sorted(boundaries, key=lambda x: x[0])  # Sort the list to avoid stacking on top of each other
 
-    # Create containers for each layer
-    area_1, area_2, area_3, area_4, area_5 = [], [], [], [], []
+    # Assign grid cells to each layer based on the boundaries (one boolean mask per layer)
+    all_layers = _layer_masks(coords_to_list, boundaries)
 
-    # Assign grid cells to each layer based on the boundaries
-    for row in range(matrix.shape[0]):
-        for col in range(matrix.shape[1]):
-            if row <= boundaries[0][col]:
-                area_1.append([col, row])
-            elif row <= boundaries[1][col]:
-                area_2.append([col, row])
-            elif row <= boundaries[2][col]:
-                area_3.append([col, row])
-            elif row <= boundaries[3][col]:
-                area_4.append([col, row])
-            else:
-                area_5.append([col, row])
-
-    all_layers = [area_1, area_2, area_3, area_4, area_5]
 
     # Fill the layers with the corresponding values
     if RF:
@@ -1849,7 +1741,7 @@ def create_schema_typeS(output_folder: str,
         materials_list = []  # Create a list to store the materials used in each layer
         # Apply the random field models to the layers
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             layer_coordinates = coords_to_list[mask]
             # Extract the random field and material name
             layer_rf, material_name = layers_with_names[i]
@@ -1863,7 +1755,7 @@ def create_schema_typeS(output_folder: str,
         # No legacy no-RF generator exists; fall back to the plain area index (0-4) per layer
         materials_list = []
         for i, lst in enumerate(all_layers):
-            mask = _layer_mask(coords_to_list, all_layers[i])
+            mask = all_layers[i]
             values[mask] = i
             materials_list.append(i)
 
