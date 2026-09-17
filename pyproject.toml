@@ -26,13 +26,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["geoschemagen", "geoschemagen.utils", "geoschemagen.config"]
-
-[tool.setuptools.package-dir]
-"geoschemagen.config" = "config"
-
-[tool.setuptools.package-data]
-"geoschemagen.config" = ["*.json"]
+packages = ["geoschemagen*"]
 
 [project.optional-dependencies]
 testing = ["pytest"]

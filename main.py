@@ -71,6 +71,7 @@ if __name__ == "__main__":
                           z_max=z_max, x_max=x_max,
                           seed=seed,
                           model_type=model_type,
+                          config_path=os.path.join(os.path.dirname(__file__), "config", "model_params.json"),
                           use_RF=use_RF,
                           create_cptlike=create_cptlike,
                           save_image=save_image,
