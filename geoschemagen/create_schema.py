@@ -644,16 +644,6 @@ def create_schema_typeA(output_folder: str,
     x_coord = np.arange(0, x_max, 1)  # Array of x coordinates
     z_coord = np.arange(0, z_max, 1)  # Array of z coordinates
 
-    print(f"DEBUG x_max={x_max!r}, z_max={z_max!r}", flush=True)
-
-    x_coord = np.arange(0, x_max, 1)
-    z_coord = np.arange(0, z_max, 1)
-
-    print(
-        f"DEBUG x_coord.shape={x_coord.shape}, z_coord.shape={z_coord.shape}",
-        flush=True
-    )
-
     xs, zs = np.meshgrid(x_coord, z_coord, indexing="ij")  # 2D mesh of coordinates x, z
 
     # Set up the matrix geometry

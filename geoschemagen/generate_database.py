@@ -1,12 +1,13 @@
 import os
 import random
+from importlib import resources
 import numpy as np
 from geoschemagen.create_schema import create_schema, create_schema_noRF, create_schema_eight_layers, \
     create_schema_eight_layers_noRF, create_schema_typeA, create_schema_typeB, create_schema_typeC, create_schema_typeD, \
     create_schema_typeE, create_schema_typeF, create_schema_typeS
 
 # Bundled defaults with tunable boundary parameters for every model type (A-F, S)
-DEFAULT_MODEL_CONFIG = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config", "model_params.json")
+DEFAULT_MODEL_CONFIG = str(resources.files("geoschemagen.config") / "model_params.json")
 
 
 def generate_database(output_folder: str,
@@ -175,8 +176,8 @@ def generate_database(output_folder: str,
             # Increment the counter
             counter += 1
 
-        # Catch any exceptions and print the error
+        # Fail immediately instead of retrying forever
         except Exception as e:
             print(f"Error in generating model no. {counter + 1}: {e}")
-            continue
+            raise
 
